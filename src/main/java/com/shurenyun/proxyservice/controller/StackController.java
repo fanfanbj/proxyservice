@@ -7,14 +7,11 @@ import com.shurenyun.proxyservice.controller.vo.AddStackResponse;
 import com.shurenyun.proxyservice.controller.vo.DelStackResponse;
 import com.shurenyun.proxyservice.controller.vo.GetStackResponse;
 import com.shurenyun.proxyservice.controller.vo.ReturnResult;
-import com.shurenyun.proxyservice.domain.EQImage;
 import com.shurenyun.proxyservice.service.CreateDockercompose;
 import com.shurenyun.proxyservice.service.RetrieveAppDynamicResource;
 import com.shurenyun.proxyservice.service.RetrieveDockercomposeTemplate;
 import com.shurenyun.proxyservice.service.ShurenyunApiAccess;
 import com.shurenyun.proxyservice.service.ShurenyunApiRequestForward;
-
-import java.util.List;
 
 import javax.validation.Valid;
 
@@ -50,12 +47,6 @@ public class StackController {
 		consumes = MediaType.APPLICATION_JSON_VALUE,
 		produces = MediaType.APPLICATION_JSON_VALUE)
 	public ReturnResult<AddStackResponse> create(@Valid @RequestBody AddStackRequest addStackRequest) {
-		String svn_url = addStackRequest.getSvn_url();
-		String stack_name = addStackRequest.getStack_name();
-		String cluster_id = addStackRequest.getCluster_id();
-		List<EQImage> images = addStackRequest.getImages();
-		
-		
 		ReturnResult<AddStackResponse> returnResult = new ReturnResult<AddStackResponse>();
 		
 		return returnResult;
