@@ -25,11 +25,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/stack")
 public class StackController {
 
 	
+	// Define the logger object for this class
+ 	private final Logger log = LoggerFactory.getLogger(this.getClass());
+
 	@Autowired
 	RetrieveDockercomposeTemplate retrieveDockercomposeTemplate;
 	
@@ -55,8 +61,14 @@ public class StackController {
 		String cluster_id = addStackRequest.getCluster_id();
 		List<EQImage> images = addStackRequest.getImages();
 		
+		String inputmessage = "svn_url:"+svn_url+
+							  "stack_name:"+stack_name+
+							  "cluster_id:"+cluster_id+
+							  "images:"+images.get(0).getName();
+		log.debug("inputmessage:"+inputmessage);
 		
 		ReturnResult<AddStackResponse> returnResult = new ReturnResult<AddStackResponse>();
+	//	returnResult.setMessage(inputmessage);
 		
 		return returnResult;
 	}
