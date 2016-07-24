@@ -19,6 +19,10 @@ public class CreateDockercompose {
 	public void doCreate(List<EQImage> images,
 					Map<String, Map<String,List<String>>> docker_compose_template_yaml) {
 		
+		//initial.
+		dockercompose = new ArrayList<DockerCompose>();
+		shurenyunCompose = new ArrayList<ShurenyunCompose>();
+		
 		//get service tag resource.
 		getServiceTagResource(images);
 		
@@ -38,7 +42,17 @@ public class CreateDockercompose {
 	 * @param images
 	 */
 	private void getServiceTagResource(List<EQImage> images) {
+		//create compose image name.
+		for(EQImage image: images) {
+	
+			String image_name = image.getName();
+			String image_tag = image.getTag();
+			String compose_name = image_name+":"+image_tag;
+			DockerCompose dockerCompose = new DockerCompose();
+			dockerCompose.setImage(compose_name);
+			this.dockercompose.add(dockerCompose);
 		
+		}
 	}
 	
 	/**
@@ -46,6 +60,8 @@ public class CreateDockercompose {
 	 * @param docker_componse_template_yaml
 	 */
 	private void getServicePortResource(Map<String, Map<String,List<String>>> docker_compose_template_yaml) {
+		
+		//
 		
 	}
 	
