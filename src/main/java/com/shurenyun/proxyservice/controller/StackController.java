@@ -6,7 +6,6 @@ import com.shurenyun.proxyservice.controller.vo.AddStackRequest;
 import com.shurenyun.proxyservice.controller.vo.AddStackResponse;
 import com.shurenyun.proxyservice.controller.vo.DelStackResponse;
 import com.shurenyun.proxyservice.controller.vo.GetStackResponse;
-import com.shurenyun.proxyservice.controller.vo.ReturnResult;
 import com.shurenyun.proxyservice.domain.EQImage;
 import com.shurenyun.proxyservice.service.CreateDockercompose;
 import com.shurenyun.proxyservice.service.RetrieveAppDynamicResource;
@@ -29,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/stack")
 public class StackController {
 
 	
@@ -53,44 +51,50 @@ public class StackController {
 
 	@RequestMapping(
 		method = RequestMethod.POST,
+		value = "/stack",
 		consumes = MediaType.APPLICATION_JSON_VALUE,
 		produces = MediaType.APPLICATION_JSON_VALUE)
-	public ReturnResult<AddStackResponse> create(@Valid @RequestBody AddStackRequest addStackRequest) {
+	public AddStackResponse create(@Valid @RequestBody AddStackRequest addStackRequest) {
 		String svn_url = addStackRequest.getSvn_url();
 		String stack_name = addStackRequest.getStack_name();
 		String cluster_id = addStackRequest.getCluster_id();
-		List<EQImage> images = addStackRequest.getImages();
+		//List<EQImage> images = addStackRequest.getImages();
 		
-		String inputmessage = "svn_url:"+svn_url+
-							  "stack_name:"+stack_name+
-							  "cluster_id:"+cluster_id+
-							  "images:"+images.get(0).getName();
-		log.debug("inputmessage:"+inputmessage);
+		String inputmessage = " svn_url:"+svn_url+
+							  " stack_name:"+stack_name+
+							  " cluster_id:"+cluster_id;
+		log.debug("POST /stack "+inputmessage);
+		//retrieve docker-compose-template.yml
+		String template_file = retrieveDockercomposeTemplate.get(svn_url);
+		log.debug(template_file);
 		
-		ReturnResult<AddStackResponse> returnResult = new ReturnResult<AddStackResponse>();
-	//	returnResult.setMessage(inputmessage);
+		AddStackResponse addStackResponse = new AddStackResponse();
 		
-		return returnResult;
+		return addStackResponse;
 	}
 	
 	@RequestMapping(
 			method = RequestMethod.GET,
-			value = "/cluster/(cluster_id}/stack/{stack_id}")
-		public ReturnResult<GetStackResponse> get(@PathVariable("cluster_id") String cluster_id,
+			value = "/cluster/{cluster_id}/stack/{stack_id}",
+			produces = MediaType.APPLICATION_JSON_VALUE)
+		public GetStackResponse get(@PathVariable("cluster_id") String cluster_id,
 				          @PathVariable("stack_id") String stack_id ) {
-		ReturnResult<GetStackResponse> returnResult = new ReturnResult<GetStackResponse>();
+		log.debug("GET /cluster/"+cluster_id+"/stack/"+stack_id);
+		GetStackResponse getStackResponse = new GetStackResponse();
 		
-		return returnResult;
+		return getStackResponse;
 	}
 	
 	@RequestMapping(
 			method = RequestMethod.DELETE,
-			value = "/cluster/(cluster_id}/stack/{stack_id}")
-		public ReturnResult<DelStackResponse> delete(@PathVariable("cluster_id") String cluster_id,
+			value = "/cluster/{cluster_id}/stack/{stack_id}",
+			produces = MediaType.APPLICATION_JSON_VALUE)
+		public DelStackResponse delete(@PathVariable("cluster_id") String cluster_id,
 					          @PathVariable("stack_id") String stack_id ) {
-			ReturnResult<DelStackResponse> returnResult = new ReturnResult<DelStackResponse>();
+			log.debug("DELETE /cluster/"+cluster_id+"/stack/"+stack_id);
+			DelStackResponse delStackResponse = new DelStackResponse();
 		
-			return returnResult;
+			return delStackResponse;
 		}
 
 }
