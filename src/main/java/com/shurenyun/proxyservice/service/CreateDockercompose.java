@@ -105,22 +105,21 @@ public class CreateDockercompose {
 			List<String> envs = new ArrayList<String>();
 			if(template_envs!=null) {
 				for(String template_env: template_envs) {
-					String[] template_env_array = template_env.split(":");
+					String[] template_env_array = template_env.split("=");
 					//print service_port_map.
 					boolean replace_flag = false;
 					for(String service_port: service_port_map.keySet()) {
 						//replace template port.
 						if(template_env_array != null && template_env_array.length==2){
 							if(template_env_array[1].trim().equals(service_port)) {
-								String service_port_replaced = service_port.replaceAll(template_env_array[1].trim(), service_port_map.get(service_port));
-								envs.add(template_env_array[0]+": "+service_port_replaced);
+								envs.add(template_env_array[0]+": "+service_port.replace(template_env_array[1].trim(), service_port_map.get(service_port)));
 								replace_flag = true;
 							}
 						}	
 					}
 					
 					if (!replace_flag)
-							envs.add(template_env);
+							envs.add(template_env.replace("=", ": "));
 					
 				}
 			}	

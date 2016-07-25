@@ -71,6 +71,8 @@ public class YamlFileParser {
 					//environment
 					if(conf_name.equals("environment")) {
 						String env = service_config.get(conf_name).toString();
+						env = env.replace("{", "");
+						env = env.replace("}", "");
 						List<String> env_list  = new ArrayList<String>();
 						String[] env_array = env.split(",");
 						for(int i=0;i<env_array.length;i++) {
@@ -81,6 +83,8 @@ public class YamlFileParser {
 					//links
 					if(conf_name.equals("links")) {
 						String links = service_config.get(conf_name).toString();
+						links = links.replace("[", "");
+						links = links.replace("]", "");
 						List<String> links_list  = new ArrayList<String>();
 						String[] links_array = links.split(",");
 						for(int i=0;i<links_array.length;i++) {
@@ -91,6 +95,8 @@ public class YamlFileParser {
 					//ports
 					if (conf_name.equals("ports")) {
 						String ports = service_config.get(conf_name).toString();
+						ports = ports.replace("[", "");
+						ports = ports.replace("]", "");
 						List<String> ports_list = new ArrayList<String>();
 						String[] ports_array = ports.split(",");
 						for(int i=0;i<ports_array.length;i++) {
@@ -101,6 +107,8 @@ public class YamlFileParser {
 					//volumes
 					if (conf_name.equals("volumes")) {
 						String volumes = service_config.get(conf_name).toString();
+						volumes = volumes.replace("[", "");
+						volumes = volumes.replace("]", "");
 						List<String> volume_list = new ArrayList<String>();
 						String[] volume_array = volumes.split(",");
 						for(int i=0;i<volume_array.length;i++) {
@@ -111,7 +119,6 @@ public class YamlFileParser {
 				}
 				services.put(service_name, servicecompose);
 			}
-			printYamlMap(services);
 			return services;
 	}
 	
