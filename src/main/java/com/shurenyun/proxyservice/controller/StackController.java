@@ -6,10 +6,9 @@ import com.shurenyun.proxyservice.controller.vo.AddStackRequest;
 import com.shurenyun.proxyservice.controller.vo.AddStackResponse;
 import com.shurenyun.proxyservice.controller.vo.DelStackResponse;
 import com.shurenyun.proxyservice.controller.vo.GetStackResponse;
-import com.shurenyun.proxyservice.domain.DockerCompose;
+import com.shurenyun.proxyservice.domain.ServiceCompose;
 import com.shurenyun.proxyservice.domain.EQApp;
 import com.shurenyun.proxyservice.domain.EQImage;
-import com.shurenyun.proxyservice.domain.ShurenyunCompose;
 import com.shurenyun.proxyservice.domain.SryApp;
 import com.shurenyun.proxyservice.service.CreateDockercompose;
 import com.shurenyun.proxyservice.service.RetrieveDockercomposeTemplate;
@@ -71,12 +70,12 @@ public class StackController {
 		log.debug("POST /stack "+inputmessage);
 		
 		//retrieve docker compose template.
-		Map<String, Map<String,List<String>>> docker_compose_template_yaml = retrieveDockercomposeTemplate.doGet(svn_url);
+		Map<String,ServiceCompose> docker_compose_template_yaml = retrieveDockercomposeTemplate.doGet(svn_url);
 		
 		//create docker compose and shurenyun compose.
 		createDockercompose.doCreate(images, docker_compose_template_yaml);
-		List<DockerCompose> dockercompose = createDockercompose.getDockercompose();
-		List<ShurenyunCompose> shurenyuncompose = createDockercompose.getShurenyunCompose();
+		String dockercompose = createDockercompose.getDockercompose();
+		String shurenyuncompose = createDockercompose.getShurenyunCompose();
 		
 		//invoke shurenyun create stack API.
 		String token = shurenyunApiAccess.doAuthentication();
@@ -94,7 +93,7 @@ public class StackController {
 			method = RequestMethod.GET,
 			value = "/cluster/{cluster_id}/stack/{stack_id}",
 			produces = MediaType.APPLICATION_JSON_VALUE)
-		public GetStackResponse get(@PathVariable("cluster_id") String cluster_id,
+	public GetStackResponse get(@PathVariable("cluster_id") String cluster_id,
 				          @PathVariable("stack_id") String stack_id ) {
 		log.debug("GET /cluster/"+cluster_id+"/stack/"+stack_id);
 	
@@ -124,7 +123,7 @@ public class StackController {
 			method = RequestMethod.DELETE,
 			value = "/cluster/{cluster_id}/stack/{stack_id}",
 			produces = MediaType.APPLICATION_JSON_VALUE)
-		public DelStackResponse delete(@PathVariable("cluster_id") String cluster_id,
+	public DelStackResponse delete(@PathVariable("cluster_id") String cluster_id,
 					          @PathVariable("stack_id") String stack_id ) {
 			log.debug("DELETE /cluster/"+cluster_id+"/stack/"+stack_id);
 			
@@ -137,6 +136,6 @@ public class StackController {
 			delStackResponse.setStatus(sryDelStackResponse.getStatus());
 			delStackResponse.setError_message(sryDelStackResponse.getError_message());
 			return delStackResponse;
-		}
+	}
 
 }

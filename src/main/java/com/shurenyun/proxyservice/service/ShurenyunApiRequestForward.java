@@ -1,11 +1,7 @@
 package com.shurenyun.proxyservice.service;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 
-import com.shurenyun.proxyservice.domain.DockerCompose;
-import com.shurenyun.proxyservice.domain.ShurenyunCompose;
 import com.shurenyun.proxyservice.service.entity.SryCreateStackResponse;
 import com.shurenyun.proxyservice.service.entity.SryDelStackResponse;
 import com.shurenyun.proxyservice.service.entity.SrySearchStackResponse;
@@ -22,8 +18,8 @@ public class ShurenyunApiRequestForward {
 	 * @param shurenyuncompose
 	 */
 	public SryCreateStackResponse createStack(String token, String cluster_id,String stack_name,
-					List<DockerCompose> dockercompose,
-					List<ShurenyunCompose> shurenyuncompose){
+					String dockercompose,
+					String shurenyuncompose){
 		SryCreateStackResponse createStackResponse = new SryCreateStackResponse();
 		return createStackResponse;
 	}

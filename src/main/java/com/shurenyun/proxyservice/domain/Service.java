@@ -36,6 +36,4 @@ public class Service {
 	public void setService_tag(String service_tag) {
 		this.service_tag = service_tag;
 	}
-
-	
 }

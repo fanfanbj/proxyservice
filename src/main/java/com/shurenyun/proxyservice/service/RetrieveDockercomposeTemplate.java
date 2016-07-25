@@ -1,10 +1,5 @@
 package com.shurenyun.proxyservice.service;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -13,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.shurenyun.proxyservice.domain.ServiceCompose;
 import com.shurenyun.proxyservice.util.YamlFileParser;
 
 @Service
@@ -30,7 +26,7 @@ public class RetrieveDockercomposeTemplate {
 	 * @param svn_url
 	 * @return template_file
 	 */
-	public Map<String, Map<String,List<String>>> doGet(String svn_url) {
+	public Map<String,ServiceCompose> doGet(String svn_url) {
 		
 		String svn_app_name = "app1";
 		String template_file_name = "/data/"+svn_app_name+"/docker-compose-template.yml";
@@ -59,8 +55,10 @@ public class RetrieveDockercomposeTemplate {
 	 * @param template_file_name
 	 * @return template_file
 	 */
-	private Map<String, Map<String,List<String>>> loadTemplate(String template_file_name){
+	private Map<String,ServiceCompose> loadTemplate(String template_file_name){
+		
+		Map<String,Map<String,Object>> service_yaml = yamlfileParser.readFromFile(template_file_name);
+		return yamlfileParser.parse(service_yaml);
 	
-		return yamlfileParser.readFromFile(template_file_name);
-    }
+	}
 }
