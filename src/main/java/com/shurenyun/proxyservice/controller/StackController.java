@@ -74,7 +74,7 @@ public class StackController {
 		
 		//create docker compose and shurenyun compose.
 		createDockercompose.doCreate(images, docker_compose_template_yaml);
-		String dockercompose = createDockercompose.getDockercompose();
+		String dockercompose = createDockercompose.getDockerCompose();
 		String shurenyuncompose = createDockercompose.getShurenyunCompose();
 		
 		//invoke shurenyun create stack API.

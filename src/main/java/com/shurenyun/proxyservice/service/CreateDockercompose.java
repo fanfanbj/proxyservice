@@ -21,7 +21,7 @@ public class CreateDockercompose {
 
 	
 	Map<String,ServiceCompose> services;
-	String dockercompose;
+	String dockerCompose;
 	String shurenyunCompose;
 
 	
@@ -38,7 +38,7 @@ public class CreateDockercompose {
 		getServicePortResource(docker_compose_template_yaml);
 		
 		//print service resource.
-		printServiceResource();
+//		printServiceResource();
 		
 		//save service resource.
 		saveServiceResource();
@@ -77,7 +77,7 @@ public class CreateDockercompose {
 	 */
 	private void getServicePortResource(Map<String,ServiceCompose> docker_compose_template_yaml) {
 		
-		//TODO get service port resource. here is Hardcode. 
+		//TODO get service port resource. here is Hardcode. it will replace by calling shurenyun's API.
 		int not_occupy_port = 9000;
 		
 		//create service port map.
@@ -137,11 +137,47 @@ public class CreateDockercompose {
 	}
 	
 	/**
-	 * save service resource.
+	 * save service resource to yml.
 	 * @param services
 	 */
 	private void saveServiceResource() {
 		
+		dockerCompose = "";
+		for(String service_name: services.keySet()) {
+			dockerCompose += service_name+":\n";
+			ServiceCompose serviceCompose = (ServiceCompose)services.get(service_name);
+			//image.
+			dockerCompose += "  image: "+serviceCompose.getImage()+"\n";
+			//ports.
+			if(serviceCompose.getPorts()!=null) {
+				dockerCompose += "  ports:\n";
+				for(String port:serviceCompose.getPorts()){
+					dockerCompose += "    - "+port+"\n";
+				}
+			}
+			//links.
+			if(serviceCompose.getLinks()!=null) {
+				dockerCompose += "  links:\n";
+				for(String link:serviceCompose.getLinks()){
+					dockerCompose += "    - "+link+"\n";
+				}
+			}	
+			//environment.
+			if(serviceCompose.getEnv()!=null) {
+				dockerCompose += "  environment:\n"; 
+				for(String env:serviceCompose.getEnv()){
+					dockerCompose += "    "+env+"\n";
+				}
+			}	
+			//volume.
+			if(serviceCompose.getVolumes()!=null) {
+				dockerCompose += "  volumes:\n";
+				for(String volume:serviceCompose.getVolumes()){
+					dockerCompose += "    - "+volume+"\n";
+				}
+			}	
+		}
+		log.debug(dockerCompose);
 	}
 	
 	/**
@@ -160,12 +196,12 @@ public class CreateDockercompose {
 		this.services = services;
 	}
 
-	public String getDockercompose() {
-		return dockercompose;
+	public String getDockerCompose() {
+		return dockerCompose;
 	}
 
-	public void setDockercompose(String dockercompose) {
-		this.dockercompose = dockercompose;
+	public void setDockerCompose(String dockerCompose) {
+		this.dockerCompose = dockerCompose;
 	}
 
 	public String getShurenyunCompose() {
