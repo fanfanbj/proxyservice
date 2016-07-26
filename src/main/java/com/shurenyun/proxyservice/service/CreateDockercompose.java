@@ -186,12 +186,27 @@ public class CreateDockercompose {
 	 */
 	private void shurenyunCompose() {
 		
+		shurenyunCompose = "";
+		for(String service_name: services.keySet()) {
+			shurenyunCompose += service_name+":\n";
+			shurenyunCompose += "  cpu: 0.2\n";
+			shurenyunCompose += "  mem: 512\n";
+			shurenyunCompose += "  instances: 1\n";
+		}
+		log.debug(shurenyunCompose);
 	}
 
+	/**
+	 * get services.
+	 * @return
+	 */
 	public Map<String, ServiceCompose> getServices() {
 		return services;
 	}
-
+	/**
+	 * set services.
+	 * @param services
+	 */
 	public void setServices(Map<String, ServiceCompose> services) {
 		this.services = services;
 	}
