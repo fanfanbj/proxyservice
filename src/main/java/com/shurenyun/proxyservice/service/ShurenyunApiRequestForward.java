@@ -10,16 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 
-import com.shurenyun.proxyservice.service.entity.SryAuthRequest;
-import com.shurenyun.proxyservice.service.entity.SryAuthResponse;
 import com.shurenyun.proxyservice.service.entity.SryCreateStackRequest;
 import com.shurenyun.proxyservice.service.entity.SryCreateStackResponse;
 import com.shurenyun.proxyservice.service.entity.SryDelStackResponse;
+import com.shurenyun.proxyservice.service.entity.SryOccupiedPort;
 import com.shurenyun.proxyservice.service.entity.SrySearchStackResponse;
 import com.shurenyun.proxyservice.util.ServiceProperties;
 
@@ -111,8 +107,29 @@ public class ShurenyunApiRequestForward {
 		ResponseEntity<SryDelStackResponse> responseEntity = delStackRestTemplate.exchange(uri, HttpMethod.DELETE, request, SryDelStackResponse.class);
 		
 		SryDelStackResponse sryDelStackResponse = responseEntity.getBody();
+		
 		return sryDelStackResponse;
 	}
 	
+	/**
+	 * get occuped ports.
+	 */
+	public SryOccupiedPort getOccupedPorts(String token,String cluster_id) {
+		SryOccupiedPort sryOccupiedPort = new SryOccupiedPort();
+		
+		RestTemplate sryOccupiedPortRestTemplate = new RestTemplate();
+		sryOccupiedPortRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+		sryOccupiedPortRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
+        
+		String uri = new String(this.configuration.getApi()+"/clusters/"+cluster_id+"/ports");
+		
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Authorization", token);
+	
+		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
+		
+		return sryOccupiedPort;
+		
+	} 
 
 }
