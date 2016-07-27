@@ -1,9 +1,12 @@
 package com.shurenyun.proxyservice.service.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SryCreateStackResponse {
 	
 	int code;
-	CreateStackData createStackData;
+	CreateStackData data;
 	
 	public int getCode() {
 		return code;
@@ -11,11 +14,11 @@ public class SryCreateStackResponse {
 	public void setCode(int code) {
 		this.code = code;
 	}
-	public CreateStackData getCreateStackData() {
-		return createStackData;
+	public CreateStackData getData() {
+		return data;
 	}
-	public void setCreateStackData(CreateStackData createStackData) {
-		this.createStackData = createStackData;
+	public void setData(CreateStackData data) {
+		this.data = data;
 	}
 	
 	

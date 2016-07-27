@@ -92,7 +92,7 @@ public class StackController {
 		//create AddStackResponse.
 		AddStackResponse addStackResponse = new AddStackResponse();
 		addStackResponse.setCluster_id(cluster_id);
-		addStackResponse.setStack_id(sryCreateStackResponse.getCreateStackData().getStack_id());
+		addStackResponse.setStack_id(sryCreateStackResponse.getData().getStack_id());
 		return addStackResponse;
 	}
 	
@@ -109,20 +109,10 @@ public class StackController {
 		SrySearchStackResponse srySearchStackResponse = shurenyunApiRequestForward.searchStack(token,cluster_id,stack_id);
 		
 		//create app_list.
-		List<EQApp> app_list = new ArrayList<EQApp>();
-		List<SryApp> SryApps = srySearchStackResponse.getApps();
-		for (SryApp sryApp: SryApps) {
-			String app_name = sryApp.getName();
-			int status = sryApp.getStatus();
-			EQApp EQApp = new EQApp();
-			EQApp.setName(app_name);
-			EQApp.setStatus(Integer.toString(status));
-			app_list.add(EQApp);
-		}
 		
 		//create GetStackResponse.	
 		GetStackResponse getStackResponse = new GetStackResponse();
-		getStackResponse.setApp_list(app_list);
+	
 		return getStackResponse;
 	}
 	
@@ -140,8 +130,7 @@ public class StackController {
 			
 			//create DelStackResponse.
 			DelStackResponse delStackResponse = new DelStackResponse();
-			delStackResponse.setStatus(sryDelStackResponse.getStatus());
-			delStackResponse.setError_message(sryDelStackResponse.getError_message());
+			delStackResponse.setStatus(Integer.toString(sryDelStackResponse.getCode()));
 			return delStackResponse;
 	}
 

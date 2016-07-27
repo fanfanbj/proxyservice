@@ -1,21 +1,24 @@
 package com.shurenyun.proxyservice.service.entity;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import com.shurenyun.proxyservice.domain.SryApp;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SrySearchStackResponse {
 	
-	List<SryApp> apps;
-
-	public List<SryApp> getApps() {
-		return apps;
+	int code;
+	SearchData data;
+	
+	public int getCode() {
+		return code;
 	}
-
-	public void setApps(List<SryApp> apps) {
-		this.apps = apps;
+	public void setCode(int code) {
+		this.code = code;
+	}
+	public SearchData getData() {
+		return data;
+	}
+	public void setData(SearchData data) {
+		this.data = data;
 	}
 	
-	
-
 }

@@ -61,6 +61,7 @@ public class ShurenyunApiRequestForward {
 		HttpEntity<SryCreateStackRequest> request = new HttpEntity<SryCreateStackRequest>(sryCreateStackRequest,requestHeaders);
 		ResponseEntity<SryCreateStackResponse> responseEntity = createStackRestTemplate.exchange(uri, HttpMethod.POST, request, SryCreateStackResponse.class);
 		SryCreateStackResponse sryCreateStackResponse = responseEntity.getBody();
+		
 		return sryCreateStackResponse;
 	}
 	
@@ -71,8 +72,22 @@ public class ShurenyunApiRequestForward {
 	 * @param stack_id
 	 */
 	public SrySearchStackResponse searchStack(String token, String cluster_id, String stack_id) {
-		SrySearchStackResponse srySearchStackResponse = new SrySearchStackResponse();
+		
+		RestTemplate searchStackRestTemplate = new RestTemplate();
+		searchStackRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+		searchStackRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
+        
+		String uri = new String(this.configuration.getApi()+"/clusters/"+cluster_id+"/stacks/"+stack_id);
+		
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Authorization", token);
+	
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		HttpEntity request = new HttpEntity(requestHeaders);
+		ResponseEntity<SrySearchStackResponse> responseEntity = searchStackRestTemplate.exchange(uri, HttpMethod.GET, request, SrySearchStackResponse.class);
+		SrySearchStackResponse srySearchStackResponse = responseEntity.getBody();
 		return srySearchStackResponse;
+	
 	}
 	
 	/**
@@ -82,7 +97,20 @@ public class ShurenyunApiRequestForward {
 	 * @param stack_id
 	 */
 	public SryDelStackResponse delStack(String token, String cluster_id, String stack_id) {
-		SryDelStackResponse sryDelStackResponse = new SryDelStackResponse();
+		
+		RestTemplate delStackRestTemplate = new RestTemplate();
+		delStackRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+		delStackRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
+        
+		String uri = new String(this.configuration.getApi()+"/clusters/"+cluster_id+"/stacks/"+stack_id);
+		
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Authorization", token);
+	
+		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
+		ResponseEntity<SryDelStackResponse> responseEntity = delStackRestTemplate.exchange(uri, HttpMethod.DELETE, request, SryDelStackResponse.class);
+		
+		SryDelStackResponse sryDelStackResponse = responseEntity.getBody();
 		return sryDelStackResponse;
 	}
 	

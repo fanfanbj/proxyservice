@@ -1,23 +1,19 @@
 package com.shurenyun.proxyservice.service.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SryDelStackResponse {
 	
-	String status;
-	String error_message;
+	int code;
+	DelStackData data;
 	
-	public String getStatus() {
-		return status;
+	public int getCode() {
+		return code;
 	}
-	public void setStatus(String status) {
-		this.status = status;
+	public void setCode(int code) {
+		this.code = code;
 	}
-	public String getError_message() {
-		return error_message;
-	}
-	public void setError_message(String error_message) {
-		this.error_message = error_message;
-	}
-	
-	
+
 
 }
