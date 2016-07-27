@@ -2,10 +2,17 @@ package com.shurenyun.proxyservice.controller.vo;
 
 public class AddStackResponse {
 	
+	String status;
 	String stack_id;
 	String cluster_id;
 	String error_message;
 	
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	public String getStack_id() {
 		return stack_id;
 	}

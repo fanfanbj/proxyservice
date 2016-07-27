@@ -14,6 +14,8 @@ import com.shurenyun.proxyservice.service.CreateDockercompose;
 import com.shurenyun.proxyservice.service.RetrieveDockercomposeTemplate;
 import com.shurenyun.proxyservice.service.ShurenyunApiAccess;
 import com.shurenyun.proxyservice.service.ShurenyunApiRequestForward;
+import com.shurenyun.proxyservice.service.entity.Application;
+import com.shurenyun.proxyservice.service.entity.DeployedApplication;
 import com.shurenyun.proxyservice.service.entity.SryCreateStackResponse;
 import com.shurenyun.proxyservice.service.entity.SryDelStackResponse;
 import com.shurenyun.proxyservice.service.entity.SrySearchStackResponse;
@@ -108,11 +110,34 @@ public class StackController {
 		String token = shurenyunApiAccess.doAuthentication();
 		SrySearchStackResponse srySearchStackResponse = shurenyunApiRequestForward.searchStack(token,cluster_id,stack_id);
 		
+		List<DeployedApplication> deployedApplications = srySearchStackResponse.getData().getDeployedApplications();
+		List<Application> applications = srySearchStackResponse.getData().getApplications();
+		
 		//create app_list.
+		List<EQApp> app_list = new ArrayList<EQApp>();
+		for(DeployedApplication deployedApplication:deployedApplications){
+			int id = deployedApplication.getId();
+			String name = deployedApplication.getName();
+			EQApp eqapp = new EQApp();
+			eqapp.setId(id);
+			eqapp.setName(name);
+			eqapp.setStatus("running");
+			app_list.add(eqapp);
+		}
+		
+		for(Application application:applications){
+			String name = application.getName();
+			EQApp eqapp = new EQApp();
+			eqapp.setName(name);
+			eqapp.setStatus("not started");
+			app_list.add(eqapp);
+		}
 		
 		//create GetStackResponse.	
 		GetStackResponse getStackResponse = new GetStackResponse();
-	
+		getStackResponse.setApp_list(app_list);
+		getStackResponse.setStatus(Integer.toString(srySearchStackResponse.getCode()));
+		getStackResponse.setError_message(srySearchStackResponse.getData().getMessage());
 		return getStackResponse;
 	}
 	
@@ -131,6 +156,7 @@ public class StackController {
 			//create DelStackResponse.
 			DelStackResponse delStackResponse = new DelStackResponse();
 			delStackResponse.setStatus(Integer.toString(sryDelStackResponse.getCode()));
+			delStackResponse.setError_message(sryDelStackResponse.getData().getMessage());
 			return delStackResponse;
 	}
 

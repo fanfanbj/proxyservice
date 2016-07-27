@@ -14,6 +14,13 @@ public class SryDelStackResponse {
 	public void setCode(int code) {
 		this.code = code;
 	}
-
+	public DelStackData getData() {
+		return data;
+	}
+	public void setData(DelStackData data) {
+		this.data = data;
+	}
+	
+	
 
 }

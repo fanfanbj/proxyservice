@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.shurenyun.proxyservice.service.entity.DelStackData;
 import com.shurenyun.proxyservice.service.entity.SryCreateStackRequest;
 import com.shurenyun.proxyservice.service.entity.SryCreateStackResponse;
 import com.shurenyun.proxyservice.service.entity.SryDelStackResponse;
@@ -78,8 +80,7 @@ public class ShurenyunApiRequestForward {
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Authorization", token);
 	
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		HttpEntity request = new HttpEntity(requestHeaders);
+		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
 		ResponseEntity<SrySearchStackResponse> responseEntity = searchStackRestTemplate.exchange(uri, HttpMethod.GET, request, SrySearchStackResponse.class);
 		SrySearchStackResponse srySearchStackResponse = responseEntity.getBody();
 		return srySearchStackResponse;
@@ -107,8 +108,8 @@ public class ShurenyunApiRequestForward {
 		ResponseEntity<SryDelStackResponse> responseEntity = delStackRestTemplate.exchange(uri, HttpMethod.DELETE, request, SryDelStackResponse.class);
 		
 		SryDelStackResponse sryDelStackResponse = responseEntity.getBody();
-		
 		return sryDelStackResponse;
+		
 	}
 	
 	/**

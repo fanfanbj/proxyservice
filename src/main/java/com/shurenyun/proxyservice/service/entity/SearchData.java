@@ -2,6 +2,9 @@ package com.shurenyun.proxyservice.service.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SearchData {
 	
 	int id;
@@ -13,6 +16,10 @@ public class SearchData {
 	String marathonConfig;
 	List<DeployedApplication> deployedApplications;
 	List<Application> applications;
+	
+	//error
+	String message;
+	
 	public int getId() {
 		return id;
 	}
@@ -67,6 +74,13 @@ public class SearchData {
 	public void setApplications(List<Application> applications) {
 		this.applications = applications;
 	}
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
 
+	
 	
 }
