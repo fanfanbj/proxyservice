@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class SrySearchStackResponse {
 	
 	int code;
-	SearchData data;
+	SearchStackData data;
 	
 	public int getCode() {
 		return code;
@@ -14,10 +14,10 @@ public class SrySearchStackResponse {
 	public void setCode(int code) {
 		this.code = code;
 	}
-	public SearchData getData() {
+	public SearchStackData getData() {
 		return data;
 	}
-	public void setData(SearchData data) {
+	public void setData(SearchStackData data) {
 		this.data = data;
 	}
 	
