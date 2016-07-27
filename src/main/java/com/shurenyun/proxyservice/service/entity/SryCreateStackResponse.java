@@ -2,21 +2,22 @@ package com.shurenyun.proxyservice.service.entity;
 
 public class SryCreateStackResponse {
 	
-	String stack_id;
-	String error_message;
+	int code;
+	CreateStackData createStackData;
 	
-	public String getStack_id() {
-		return stack_id;
+	public int getCode() {
+		return code;
 	}
-	public void setStack_id(String stack_id) {
-		this.stack_id = stack_id;
+	public void setCode(int code) {
+		this.code = code;
 	}
-	public String getError_message() {
-		return error_message;
+	public CreateStackData getCreateStackData() {
+		return createStackData;
 	}
-	public void setError_message(String error_message) {
-		this.error_message = error_message;
+	public void setCreateStackData(CreateStackData createStackData) {
+		this.createStackData = createStackData;
 	}
+	
 	
 	
 

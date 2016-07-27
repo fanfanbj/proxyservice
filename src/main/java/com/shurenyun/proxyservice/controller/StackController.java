@@ -79,13 +79,20 @@ public class StackController {
 		
 		//invoke shurenyun create stack API.
 		String token = shurenyunApiAccess.doAuthentication();
+
+		String requestforward = "curl -X POST --header \"Content-Type: application/json\" --header \"Accept: application/json\""+
+								"--header \"Authorization: "+token+"\" -d \"{"+
+								"\"name\": \""+stack_name+"\","+
+								"\"compose\":  \""+dockercompose+"\"," +
+								"\"marathonConfig\": \""+shurenyuncompose+"\"" +
+								"}";
+		log.debug(requestforward);
 		SryCreateStackResponse sryCreateStackResponse = shurenyunApiRequestForward.createStack(token,cluster_id,stack_name,dockercompose,shurenyuncompose);
 		
 		//create AddStackResponse.
 		AddStackResponse addStackResponse = new AddStackResponse();
 		addStackResponse.setCluster_id(cluster_id);
-		addStackResponse.setStack_id(sryCreateStackResponse.getStack_id());
-		addStackResponse.setError_message(sryCreateStackResponse.getError_message());
+		addStackResponse.setStack_id(sryCreateStackResponse.getCreateStackData().getStack_id());
 		return addStackResponse;
 	}
 	
