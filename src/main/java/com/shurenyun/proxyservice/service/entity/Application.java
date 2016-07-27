@@ -5,22 +5,20 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Application {
 	
-	int instances;
-	String name;
+	int Instances;
+	String Name;
 	
 	public int getInstances() {
-		return instances;
+		return Instances;
 	}
 	public void setInstances(int instances) {
-		this.instances = instances;
+		Instances = instances;
 	}
 	public String getName() {
-		return name;
+		return Name;
 	}
 	public void setName(String name) {
-		this.name = name;
+		Name = name;
 	}
 	
-	
-
 }

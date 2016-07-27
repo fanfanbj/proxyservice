@@ -5,55 +5,54 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DeployedApplication {
 	
-	int id;
-	int cid;
-	int uid;
-	int stackId;
-	int instances;
-	String name;
-	String dependencies;
-	
+	int Id;
+	int Cid;
+	int Uid;
+	int StackId;
+	int Instances;
+	String Name;
+	String Dependencies;
 	public int getId() {
-		return id;
+		return Id;
 	}
 	public void setId(int id) {
-		this.id = id;
+		Id = id;
 	}
 	public int getCid() {
-		return cid;
+		return Cid;
 	}
 	public void setCid(int cid) {
-		this.cid = cid;
+		Cid = cid;
 	}
 	public int getUid() {
-		return uid;
+		return Uid;
 	}
 	public void setUid(int uid) {
-		this.uid = uid;
+		Uid = uid;
 	}
 	public int getStackId() {
-		return stackId;
+		return StackId;
 	}
 	public void setStackId(int stackId) {
-		this.stackId = stackId;
+		StackId = stackId;
 	}
 	public int getInstances() {
-		return instances;
+		return Instances;
 	}
 	public void setInstances(int instances) {
-		this.instances = instances;
+		Instances = instances;
 	}
 	public String getName() {
-		return name;
+		return Name;
 	}
 	public void setName(String name) {
-		this.name = name;
+		Name = name;
 	}
 	public String getDependencies() {
-		return dependencies;
+		return Dependencies;
 	}
 	public void setDependencies(String dependencies) {
-		this.dependencies = dependencies;
+		Dependencies = dependencies;
 	}
 	
 	

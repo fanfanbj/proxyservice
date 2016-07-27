@@ -111,7 +111,7 @@ public class StackController {
 		SrySearchStackResponse srySearchStackResponse = shurenyunApiRequestForward.searchStack(token,cluster_id,stack_id);
 		
 		List<DeployedApplication> deployedApplications = srySearchStackResponse.getData().getDeployedApplications();
-		List<Application> applications = srySearchStackResponse.getData().getApplications();
+	//	List<Application> applications = srySearchStackResponse.getData().getApplications();
 		
 		//create app_list.
 		List<EQApp> app_list = new ArrayList<EQApp>();
@@ -125,13 +125,13 @@ public class StackController {
 			app_list.add(eqapp);
 		}
 		
-		for(Application application:applications){
-			String name = application.getName();
-			EQApp eqapp = new EQApp();
-			eqapp.setName(name);
-			eqapp.setStatus("not started");
-			app_list.add(eqapp);
-		}
+//		for(Application application:applications){
+//			String name = application.getName();
+//			EQApp eqapp = new EQApp();
+//			eqapp.setName(name);
+//			eqapp.setStatus("not started");
+//			app_list.add(eqapp);
+//		}
 		
 		//create GetStackResponse.	
 		GetStackResponse getStackResponse = new GetStackResponse();

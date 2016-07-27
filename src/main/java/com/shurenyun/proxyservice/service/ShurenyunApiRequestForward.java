@@ -106,7 +106,6 @@ public class ShurenyunApiRequestForward {
 	
 		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
 		ResponseEntity<SryDelStackResponse> responseEntity = delStackRestTemplate.exchange(uri, HttpMethod.DELETE, request, SryDelStackResponse.class);
-		
 		SryDelStackResponse sryDelStackResponse = responseEntity.getBody();
 		return sryDelStackResponse;
 		

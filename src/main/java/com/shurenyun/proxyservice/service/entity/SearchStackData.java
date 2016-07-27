@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SearchStackData {
 	
-	int id;
-	int cid;
-	int uid;
+	int Id;
+	int Cid;
+	int Uid;
 	String status;
 	String name;
 	String compose;
@@ -21,22 +21,22 @@ public class SearchStackData {
 	String message;
 	
 	public int getId() {
-		return id;
+		return Id;
 	}
 	public void setId(int id) {
-		this.id = id;
+		Id = id;
 	}
 	public int getCid() {
-		return cid;
+		return Cid;
 	}
 	public void setCid(int cid) {
-		this.cid = cid;
+		Cid = cid;
 	}
 	public int getUid() {
-		return uid;
+		return Uid;
 	}
 	public void setUid(int uid) {
-		this.uid = uid;
+		Uid = uid;
 	}
 	public String getStatus() {
 		return status;
@@ -79,8 +79,5 @@ public class SearchStackData {
 	}
 	public void setMessage(String message) {
 		this.message = message;
-	}
-
-	
-	
+	}	
 }
