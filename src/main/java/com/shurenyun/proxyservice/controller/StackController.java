@@ -26,6 +26,7 @@ import com.shurenyun.proxyservice.service.entity.SryOuterPort;
 import com.shurenyun.proxyservice.service.entity.SryCreateStackResponse;
 import com.shurenyun.proxyservice.service.entity.SryDelStackResponse;
 import com.shurenyun.proxyservice.service.entity.SrySearchStackResponse;
+import com.shurenyun.proxyservice.service.entity.SryStackDeployResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,27 +98,29 @@ public class StackController {
 		
 		//create docker compose and shurenyun compose.
 		createDockercompose.doCreate(docker_compose_template_yaml,images, not_occupied_ports);
-		String dockercompose = createDockercompose.getDockerCompose();
-		String shurenyuncompose = createDockercompose.getShurenyunCompose();
+		Object dockercompose = createDockercompose.getDockerComposeJson();
+		Object shurenyuncompose = createDockercompose.getShurenyunComposeJson();
 	
-		//print request message.
-		String requestforward = "curl -X POST --header \"Content-Type: application/json\" --header \"Accept: application/json\""+
-								"--header \"Authorization: "+token+"\" -d \"{"+
-								"\"name\": \""+stack_name+"\","+
-								"\"compose\":  \""+dockercompose+"\"," +
-								"\"marathonConfig\": \""+shurenyuncompose+"\"" +
-								"}";
-		log.debug(requestforward);
-		
 		//create stack.
 		SryCreateStackResponse sryCreateStackResponse = shurenyunApiRequestForward.createStack(token,cluster_id,stack_name,dockercompose,shurenyuncompose);
-		lock.unlock();
+		String stack_id = sryCreateStackResponse.getData().getStack_id();
 		
 		//create AddStackResponse.
 		AddStackResponse addStackResponse = new AddStackResponse();
 		addStackResponse.setCluster_id(cluster_id);
-		addStackResponse.setStack_id(sryCreateStackResponse.getData().getStack_id());
+		addStackResponse.setStack_id(stack_id);
+			
+		if(stack_id!=null){
+			//deploy stack.
+			SryStackDeployResponse sryStackDeployResponse = shurenyunApiRequestForward.stackDeploy(token,cluster_id,stack_id);
+			addStackResponse.setError_message(sryStackDeployResponse.getData().getMessage());
+		}{
+			//create stack error.
+			addStackResponse.setError_message(sryCreateStackResponse.getData().getMessage());
+		}
+		lock.unlock();
 		return addStackResponse;
+		
 	}
 	
 	@RequestMapping(
@@ -144,7 +147,6 @@ public class StackController {
 //			jsonInString = mapper.writeValueAsString(deployedApplication);
 //			log.debug(jsonInString);
 //		} catch (JsonProcessingException e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 		

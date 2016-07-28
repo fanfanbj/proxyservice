@@ -3,8 +3,8 @@ package com.shurenyun.proxyservice.service.entity;
 public class SryCreateStackRequest {
 	
 	String name;
-	String compose;
-	String marathonConfig;
+	Object compose;
+	Object marathonConfig;
 	
 	public String getName() {
 		return name;
@@ -12,19 +12,17 @@ public class SryCreateStackRequest {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getCompose() {
+	public Object getCompose() {
 		return compose;
 	}
-	public void setCompose(String compose) {
+	public void setCompose(Object compose) {
 		this.compose = compose;
 	}
-	public String getMarathonConfig() {
+	public Object getMarathonConfig() {
 		return marathonConfig;
 	}
-	public void setMarathonConfig(String marathonConfig) {
+	public void setMarathonConfig(Object marathonConfig) {
 		this.marathonConfig = marathonConfig;
 	}
 	
-	
-
 }

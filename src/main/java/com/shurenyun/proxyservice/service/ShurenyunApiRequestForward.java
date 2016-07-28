@@ -20,6 +20,7 @@ import com.shurenyun.proxyservice.service.entity.SryCreateStackResponse;
 import com.shurenyun.proxyservice.service.entity.SryDelStackResponse;
 import com.shurenyun.proxyservice.service.entity.SryOccupiedPortResponse;
 import com.shurenyun.proxyservice.service.entity.SrySearchStackResponse;
+import com.shurenyun.proxyservice.service.entity.SryStackDeployResponse;
 import com.shurenyun.proxyservice.util.ServiceProperties;
 
 @Service
@@ -40,8 +41,8 @@ public class ShurenyunApiRequestForward {
 	 * @param shurenyuncompose
 	 */
 	public SryCreateStackResponse createStack(String token, String cluster_id,String stack_name,
-					String dockercompose,
-					String shurenyuncompose){
+					Object dockercomposeJson,
+					Object shurenyuncomposeJson){
 
 		RestTemplate createStackRestTemplate = new RestTemplate();
 		createStackRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
@@ -54,14 +55,43 @@ public class ShurenyunApiRequestForward {
 		
 		SryCreateStackRequest sryCreateStackRequest = new SryCreateStackRequest();
 		sryCreateStackRequest.setName(stack_name);
-		sryCreateStackRequest.setCompose(dockercompose);
-		sryCreateStackRequest.setMarathonConfig(shurenyuncompose);
+		sryCreateStackRequest.setCompose(dockercomposeJson);
+		sryCreateStackRequest.setMarathonConfig(shurenyuncomposeJson);
 		
 		HttpEntity<SryCreateStackRequest> request = new HttpEntity<SryCreateStackRequest>(sryCreateStackRequest,requestHeaders);
+		//log.debug(createStackRestTemplate.exchange(uri, HttpMethod.POST, request,String.class).getBody());
+				
 		ResponseEntity<SryCreateStackResponse> responseEntity = createStackRestTemplate.exchange(uri, HttpMethod.POST, request, SryCreateStackResponse.class);
 		SryCreateStackResponse sryCreateStackResponse = responseEntity.getBody();
 		
 		return sryCreateStackResponse;
+	}
+	
+	/**
+	 * deploy stack.
+	 * @param token
+	 * @param cluser_id
+	 * @param stack_id
+	 * @return
+	 */
+	public SryStackDeployResponse stackDeploy(String token,String cluster_id,String stack_id) {
+		
+		 RestTemplate stackDeployRestTemplate = new RestTemplate();
+		 stackDeployRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+		 stackDeployRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
+        
+		String uri = new String(this.configuration.getApi()+"/clusters/"+cluster_id+"/stacks/"+stack_id+"/deploy");
+		
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Authorization", token);
+		
+		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
+		//log.debug(stackDeployRestTemplate.exchange(uri, HttpMethod.POST, request,String.class).getBody());
+				
+		ResponseEntity<SryStackDeployResponse> responseEntity = stackDeployRestTemplate.exchange(uri, HttpMethod.PUT, request, SryStackDeployResponse.class);
+		SryStackDeployResponse sryStackDeployResponse = responseEntity.getBody();
+		
+		return sryStackDeployResponse;
 	}
 	
 	/**

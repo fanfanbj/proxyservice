@@ -28,7 +28,8 @@ public class RetrieveDockercomposeTemplate {
 	 */
 	public Map<String,ServiceCompose> doGet(String svn_url) {
 		
-		String svn_app_name = "app1";
+		String[] svn_split = svn_url.split("/");
+		String svn_app_name = svn_split[svn_split.length-1];
 		String template_file_name = "/data/"+svn_app_name+"/docker-compose-template.yml";
 		
 		//get docker-compose-template from SVN.

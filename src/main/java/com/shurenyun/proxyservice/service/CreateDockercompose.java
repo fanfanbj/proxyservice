@@ -1,17 +1,22 @@
 package com.shurenyun.proxyservice.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.shurenyun.proxyservice.domain.ServiceCompose;
 import com.shurenyun.proxyservice.util.YamlFileParser;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shurenyun.proxyservice.domain.EQImage;
 
 @Service
@@ -21,10 +26,9 @@ public class CreateDockercompose {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	Map<String,ServiceCompose> services;
-	String dockerCompose;
-	String shurenyunCompose;
+	Object dockerComposeJson;
+	Object shurenyunComposeJson;
 
-	
 	public void doCreate(Map<String,ServiceCompose> docker_compose_template_yaml,
 			List<EQImage> images,
 			List<Long> not_occupied_ports) {
@@ -143,7 +147,7 @@ public class CreateDockercompose {
 	 */
 	private void saveServiceResource() {
 		
-		dockerCompose = "";
+		String dockerCompose = "";
 		for(String service_name: services.keySet()) {
 			dockerCompose += service_name+":\n";
 			ServiceCompose serviceCompose = (ServiceCompose)services.get(service_name);
@@ -179,6 +183,19 @@ public class CreateDockercompose {
 			}	
 		}
 		log.debug(dockerCompose);
+		dockerComposeJson = JSONValue.parse(dockerCompose);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		//Object to JSON in file
+		try {
+			mapper.writeValue(new File("/data/docker-compose.yml"), dockerComposeJson);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -187,14 +204,28 @@ public class CreateDockercompose {
 	 */
 	private void shurenyunCompose() {
 		
-		shurenyunCompose = "";
+		String shurenyunCompose = "";
 		for(String service_name: services.keySet()) {
 			shurenyunCompose += service_name+":\n";
 			shurenyunCompose += "  cpu: 0.2\n";
 			shurenyunCompose += "  mem: 512\n";
 			shurenyunCompose += "  instances: 1\n";
 		}
-		log.debug(shurenyunCompose);
+		//log.debug(shurenyunCompose);
+		shurenyunComposeJson = JSONValue.parse(shurenyunCompose);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		//Object to JSON in file
+		try {
+			mapper.writeValue(new File("/data/sry-compose.yml"), shurenyunComposeJson);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	
 	}
 
 	/**
@@ -212,23 +243,22 @@ public class CreateDockercompose {
 		this.services = services;
 	}
 
-	public String getDockerCompose() {
-		return dockerCompose;
+	public Object getDockerComposeJson() {
+		return dockerComposeJson;
 	}
 
-	public void setDockerCompose(String dockerCompose) {
-		this.dockerCompose = dockerCompose;
+	public void setDockerComposeJson(Object dockerComposeJson) {
+		this.dockerComposeJson = dockerComposeJson;
 	}
 
-	public String getShurenyunCompose() {
-		return shurenyunCompose;
+	public Object getShurenyunComposeJson() {
+		return shurenyunComposeJson;
 	}
 
-	public void setShurenyunCompose(String shurenyunCompose) {
-		this.shurenyunCompose = shurenyunCompose;
+	public void setShurenyunComposeJson(Object shurenyunComposeJson) {
+		this.shurenyunComposeJson = shurenyunComposeJson;
 	}
-	
-	
 
 	
+
 }
