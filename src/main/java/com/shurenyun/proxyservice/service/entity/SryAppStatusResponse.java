@@ -3,22 +3,22 @@ package com.shurenyun.proxyservice.service.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SrySearchStackResponse{
+public class SryAppStatusResponse {
 	
 	int code;
-	SrySearchStackData data;
-	
+	SryAppStatusData data;
 	public int getCode() {
 		return code;
 	}
 	public void setCode(int code) {
 		this.code = code;
 	}
-	public SrySearchStackData getData() {
+	public SryAppStatusData getData() {
 		return data;
 	}
-	public void setData(SrySearchStackData data) {
+	public void setData(SryAppStatusData data) {
 		this.data = data;
 	}
 	
+		
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.shurenyun.proxyservice.domain.ServiceCompose;
@@ -19,14 +20,14 @@ public class CreateDockercompose {
 	// Define the logger object for this class
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	
 	Map<String,ServiceCompose> services;
 	String dockerCompose;
 	String shurenyunCompose;
 
 	
-	public void doCreate(List<EQImage> images,
-			Map<String,ServiceCompose> docker_compose_template_yaml) {
+	public void doCreate(Map<String,ServiceCompose> docker_compose_template_yaml,
+			List<EQImage> images,
+			List<Long> not_occupied_ports) {
 		
 		//initial.
 		services = docker_compose_template_yaml;
@@ -35,7 +36,7 @@ public class CreateDockercompose {
 		getServiceTagResource(images);
 		
 		//get service port resource.
-		getServicePortResource(docker_compose_template_yaml);
+		getServicePortResource(not_occupied_ports);
 		
 		//print service resource.
 //		printServiceResource();
@@ -75,25 +76,25 @@ public class CreateDockercompose {
 	 * get service port resource.
 	 * @param docker_componse_template_yaml
 	 */
-	private void getServicePortResource(Map<String,ServiceCompose> docker_compose_template_yaml) {
-		
-		//TODO get service port resource. here is Hardcode. it will replace by calling shurenyun's API.
-		int not_occupy_port = 9000;
+	private void getServicePortResource(List<Long> not_occupied_ports) {
 		
 		//create service port map.
 		Map<String,String> service_port_map = new HashMap<String,String>();
 		
+		int i = 0;
 		//replace template port with not_occupy_port.
 		for (String service_name : this.services.keySet()) {
+		
+			Long not_occupy_port = not_occupied_ports.get(i);
 			ServiceCompose service_config = this.services.get(service_name);
 			List<String> template_ports = (List<String>)service_config.getPorts();
 			List<String> ports = new ArrayList<String>();
 			if(template_ports!=null) {
 				for(String template_port: template_ports) {
 					String template_port_tag = template_port.split(":")[0];
-					ports.add(Integer.toString(not_occupy_port)+":"+Integer.toString(not_occupy_port));
-					service_port_map.put(template_port_tag, Integer.toString(not_occupy_port));
-					not_occupy_port++;
+					ports.add(Long.toString(not_occupy_port)+":"+Long.toString(not_occupy_port));
+					service_port_map.put(template_port_tag, Long.toString(not_occupy_port));
+					i++;
 				}
 			}
 			service_config.setPorts(ports);
@@ -152,28 +153,28 @@ public class CreateDockercompose {
 			if(serviceCompose.getPorts()!=null) {
 				dockerCompose += "  ports:\n";
 				for(String port:serviceCompose.getPorts()){
-					dockerCompose += "    - "+port+"\n";
+					dockerCompose += "    - "+port.replaceAll("^\\s+|\\s+$", "")+"\n";
 				}
 			}
 			//links.
 			if(serviceCompose.getLinks()!=null) {
 				dockerCompose += "  links:\n";
 				for(String link:serviceCompose.getLinks()){
-					dockerCompose += "    - "+link+"\n";
+					dockerCompose += "    - "+link.replaceAll("^\\s+|\\s+$", "")+"\n";
 				}
 			}	
 			//environment.
 			if(serviceCompose.getEnv()!=null) {
 				dockerCompose += "  environment:\n"; 
 				for(String env:serviceCompose.getEnv()){
-					dockerCompose += "    "+env+"\n";
+					dockerCompose += "    "+env.replaceAll("^\\s+|\\s+$", "")+"\n";
 				}
 			}	
 			//volume.
 			if(serviceCompose.getVolumes()!=null) {
 				dockerCompose += "  volumes:\n";
 				for(String volume:serviceCompose.getVolumes()){
-					dockerCompose += "    - "+volume+"\n";
+					dockerCompose += "    - "+volume.replaceAll("^\\s+|\\s+$", "")+"\n";
 				}
 			}	
 		}

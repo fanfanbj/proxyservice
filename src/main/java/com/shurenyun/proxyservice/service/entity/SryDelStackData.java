@@ -1,6 +1,9 @@
 package com.shurenyun.proxyservice.service.entity;
 
-public class DelStackData {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class SryDelStackData{
 	
 	int stackId;
 	//error.

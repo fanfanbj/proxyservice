@@ -6,18 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.shurenyun.proxyservice.service.entity.DelStackData;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shurenyun.proxyservice.service.entity.SryAppStatusResponse;
 import com.shurenyun.proxyservice.service.entity.SryCreateStackRequest;
 import com.shurenyun.proxyservice.service.entity.SryCreateStackResponse;
 import com.shurenyun.proxyservice.service.entity.SryDelStackResponse;
-import com.shurenyun.proxyservice.service.entity.SryOccupiedPort;
+import com.shurenyun.proxyservice.service.entity.SryOccupiedPortResponse;
 import com.shurenyun.proxyservice.service.entity.SrySearchStackResponse;
 import com.shurenyun.proxyservice.util.ServiceProperties;
 
@@ -82,7 +83,23 @@ public class ShurenyunApiRequestForward {
 	
 		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
 		ResponseEntity<SrySearchStackResponse> responseEntity = searchStackRestTemplate.exchange(uri, HttpMethod.GET, request, SrySearchStackResponse.class);
+		
 		SrySearchStackResponse srySearchStackResponse = responseEntity.getBody();
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		//DEBUG code. Object to JSON in String
+		//log.debug(searchStackRestTemplate.exchange(uri, HttpMethod.GET, request,String.class).getBody());
+		String jsonInString;
+		try {
+			jsonInString = mapper.writeValueAsString(searchStackRestTemplate.exchange(uri, HttpMethod.GET, request, SrySearchStackResponse.class));
+			log.debug(jsonInString);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		return srySearchStackResponse;
 	
 	}
@@ -113,9 +130,11 @@ public class ShurenyunApiRequestForward {
 	
 	/**
 	 * get occuped ports.
+	 * @param token
+	 * @param cluster_id
+	 * @return
 	 */
-	public SryOccupiedPort getOccupedPorts(String token,String cluster_id) {
-		SryOccupiedPort sryOccupiedPort = new SryOccupiedPort();
+	public SryOccupiedPortResponse getOccupedPorts(String token,String cluster_id) {
 		
 		RestTemplate sryOccupiedPortRestTemplate = new RestTemplate();
 		sryOccupiedPortRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
@@ -128,8 +147,37 @@ public class ShurenyunApiRequestForward {
 	
 		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
 		
-		return sryOccupiedPort;
+		ResponseEntity<SryOccupiedPortResponse> responseEntity = sryOccupiedPortRestTemplate.exchange(uri, HttpMethod.GET, request, SryOccupiedPortResponse.class);
+		SryOccupiedPortResponse sryOccupiedPortResponse = responseEntity.getBody();
+		return sryOccupiedPortResponse;
 		
 	} 
+	
+	/**
+	 * get App Status.
+	 * @param token
+	 * @param app_id
+	 * @return
+	 */
+	public SryAppStatusResponse getAppStatus(String token, long cluster_id, long app_id) {
+		
+		RestTemplate sryAppStatusRestTemplate = new RestTemplate();
+		sryAppStatusRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+		sryAppStatusRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
+        
+		String uri = new String(this.configuration.getApi()+"/clusters/"+cluster_id+"/apps/"+app_id+"/status");
+		
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("Authorization", token);
+	
+		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
+		
+		ResponseEntity<SryAppStatusResponse> responseEntity = sryAppStatusRestTemplate.exchange(uri, HttpMethod.GET, request, SryAppStatusResponse.class);
+		SryAppStatusResponse sryAppStatusResponse = responseEntity.getBody();
+		return sryAppStatusResponse;
+		
+	}
+	
+	
 
 }

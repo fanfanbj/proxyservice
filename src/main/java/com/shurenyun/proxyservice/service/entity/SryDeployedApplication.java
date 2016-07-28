@@ -1,17 +1,32 @@
 package com.shurenyun.proxyservice.service.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DeployedApplication {
+public class SryDeployedApplication {
 	
-	int Id;
-	int Cid;
-	int Uid;
-	int StackId;
-	int Instances;
-	String Name;
-	String Dependencies;
+	@JsonProperty("Id")
+	private int Id;
+	
+	@JsonProperty("Cid")
+	private int Cid;
+	
+	@JsonProperty("Uid")
+	private int Uid;
+	
+	@JsonProperty("StackId")
+	private int StackId;
+	
+	@JsonProperty("Instances")
+	private int Instances;
+	
+	@JsonProperty("Name")
+	private String Name;
+	
+	@JsonProperty("Dependencies")
+	private String Dependencies;
+	
 	public int getId() {
 		return Id;
 	}

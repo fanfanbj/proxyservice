@@ -32,6 +32,9 @@ public class EQApp {
 		this.status = status;
 	}
 	
-	
+	@Override
+	public boolean equals(Object obj) {
+		return (this.name.equals(((EQApp)obj).getName()));
+	}
 
 }

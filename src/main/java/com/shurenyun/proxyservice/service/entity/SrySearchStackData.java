@@ -3,19 +3,25 @@ package com.shurenyun.proxyservice.service.entity;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SearchStackData {
+public class SrySearchStackData {
 	
+	@JsonProperty("Id")
 	int Id;
+	
+	@JsonProperty("Cid")
+	
 	int Cid;
+	@JsonProperty("Uid")
 	int Uid;
 	String status;
 	String name;
 	String compose;
 	String marathonConfig;
-	List<DeployedApplication> deployedApplications;
-	List<Application> applications;
+	List<SryDeployedApplication> deployedApplications;
+	List<SryApplication> applications;
 	
 	//error
 	String message;
@@ -62,16 +68,16 @@ public class SearchStackData {
 	public void setMarathonConfig(String marathonConfig) {
 		this.marathonConfig = marathonConfig;
 	}
-	public List<DeployedApplication> getDeployedApplications() {
+	public List<SryDeployedApplication> getDeployedApplications() {
 		return deployedApplications;
 	}
-	public void setDeployedApplications(List<DeployedApplication> deployedApplications) {
+	public void setDeployedApplications(List<SryDeployedApplication> deployedApplications) {
 		this.deployedApplications = deployedApplications;
 	}
-	public List<Application> getApplications() {
+	public List<SryApplication> getApplications() {
 		return applications;
 	}
-	public void setApplications(List<Application> applications) {
+	public void setApplications(List<SryApplication> applications) {
 		this.applications = applications;
 	}
 	public String getMessage() {

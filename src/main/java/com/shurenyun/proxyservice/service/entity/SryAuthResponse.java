@@ -2,13 +2,13 @@ package com.shurenyun.proxyservice.service.entity;
 
 public class SryAuthResponse {
 
-	private AuthData data;
+	private SryAuthData data;
 	private int code;
 	
-	public AuthData getData() {
+	public SryAuthData getData() {
 		return data;
 	}
-	public void setData(AuthData data) {
+	public void setData(SryAuthData data) {
 		this.data = data;
 	}
 	

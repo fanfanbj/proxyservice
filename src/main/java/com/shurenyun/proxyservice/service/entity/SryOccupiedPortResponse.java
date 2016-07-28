@@ -3,10 +3,10 @@ package com.shurenyun.proxyservice.service.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SrySearchStackResponse{
+public class SryOccupiedPortResponse {
 	
 	int code;
-	SrySearchStackData data;
+	SryOccupiedPortData data;
 	
 	public int getCode() {
 		return code;
@@ -14,11 +14,14 @@ public class SrySearchStackResponse{
 	public void setCode(int code) {
 		this.code = code;
 	}
-	public SrySearchStackData getData() {
+	public SryOccupiedPortData getData() {
 		return data;
 	}
-	public void setData(SrySearchStackData data) {
+	public void setData(SryOccupiedPortData data) {
 		this.data = data;
 	}
 	
+	
+	
+
 }
