@@ -7,12 +7,37 @@ curl "http://localhost:8090/stack" \
 {
   "svn_url": "http://svn-server/app1/",
   "stack_name":"stack_test_001",
-  "cluster_id":"1000",
+  "cluster_id":"2453",
   "images": [
     {
-      "name":"sse-registry.com/app1",
-      "tag":"v1.0",
-      "role":"nginx" 
+      "name":"sampleeureka",
+      "tag":"1.0.1-SNAPSHOT",
+      "role":"eureka" 
+    },
+    {
+      "name":"sampleconfig",
+      "tag":"1.0.1-SNAPSHOT",
+      "role":"config" 
+    },
+    {
+      "name":"sampleservice",
+      "tag":"1.0.1-SNAPSHOT",
+      "role":"service" 
+    },
+    {
+      "name":"sampleaggregate1",
+      "tag":"1.0.1-SNAPSHOT",
+      "role":"service" 
+    },
+    {
+      "name":"sampleaggregate2",
+      "tag":"1.0.1-SNAPSHOT",
+      "role":"service" 
+    },
+    {
+      "name":"samplegateway",
+      "tag":"1.0.1-SNAPSHOT",
+      "role":"apigateway" 
     }
   ]
 }		

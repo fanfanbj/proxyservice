@@ -26,8 +26,8 @@ public class CreateDockercompose {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	Map<String,ServiceCompose> services;
-	Object dockerComposeJson;
-	Object shurenyunComposeJson;
+	String dockerCompose;
+	String shurenyunCompose;
 
 	public void doCreate(Map<String,ServiceCompose> docker_compose_template_yaml,
 			List<EQImage> images,
@@ -96,7 +96,7 @@ public class CreateDockercompose {
 			if(template_ports!=null) {
 				for(String template_port: template_ports) {
 					String template_port_tag = template_port.split(":")[0];
-					ports.add(Long.toString(not_occupy_port)+":"+Long.toString(not_occupy_port));
+					ports.add("\\\""+Long.toString(not_occupy_port)+":"+Long.toString(not_occupy_port)+"\\\"");
 					service_port_map.put(template_port_tag, Long.toString(not_occupy_port));
 					i++;
 				}
@@ -147,55 +147,43 @@ public class CreateDockercompose {
 	 */
 	private void saveServiceResource() {
 		
-		String dockerCompose = "";
+		dockerCompose = "";
 		for(String service_name: services.keySet()) {
-			dockerCompose += service_name+":\n";
+			dockerCompose += service_name+":\\n";
 			ServiceCompose serviceCompose = (ServiceCompose)services.get(service_name);
 			//image.
-			dockerCompose += "  image: "+serviceCompose.getImage()+"\n";
+			dockerCompose += "  image: "+serviceCompose.getImage()+"\\n";
 			//ports.
-			if(serviceCompose.getPorts()!=null) {
-				dockerCompose += "  ports:\n";
+			if(serviceCompose.getPorts()!=null && serviceCompose.getPorts().size()>0) {
+				dockerCompose += "  ports:\\n";
 				for(String port:serviceCompose.getPorts()){
-					dockerCompose += "    - "+port.replaceAll("^\\s+|\\s+$", "")+"\n";
+					dockerCompose += "    - "+port.replaceAll("^\\s+|\\s+$", "")+"\\n";
 				}
 			}
 			//links.
-			if(serviceCompose.getLinks()!=null) {
-				dockerCompose += "  links:\n";
+			if(serviceCompose.getLinks()!=null && serviceCompose.getLinks().size()>0) {
+				dockerCompose += "  links:\\n";
 				for(String link:serviceCompose.getLinks()){
-					dockerCompose += "    - "+link.replaceAll("^\\s+|\\s+$", "")+"\n";
+					dockerCompose += "    - "+link.replaceAll("^\\s+|\\s+$", "")+"\\n";
 				}
 			}	
 			//environment.
-			if(serviceCompose.getEnv()!=null) {
-				dockerCompose += "  environment:\n"; 
+			if(serviceCompose.getEnv()!=null && serviceCompose.getEnv().size()>0) {
+				dockerCompose += "  environment:\\n"; 
 				for(String env:serviceCompose.getEnv()){
-					dockerCompose += "    "+env.replaceAll("^\\s+|\\s+$", "")+"\n";
+					dockerCompose += "    "+env.replaceAll("^\\s+|\\s+$", "")+"\\n";
 				}
 			}	
 			//volume.
-			if(serviceCompose.getVolumes()!=null) {
-				dockerCompose += "  volumes:\n";
+			if(serviceCompose.getVolumes()!=null && serviceCompose.getVolumes().size()>0) {
+				dockerCompose += "  volumes:\\n";
 				for(String volume:serviceCompose.getVolumes()){
-					dockerCompose += "    - "+volume.replaceAll("^\\s+|\\s+$", "")+"\n";
+					dockerCompose += "    - "+volume.replaceAll("^\\s+|\\s+$", "")+"\\n";
 				}
 			}	
 		}
-		log.debug(dockerCompose);
-		dockerComposeJson = JSONValue.parse(dockerCompose);
+		//log.debug(dockerCompose);
 		
-		ObjectMapper mapper = new ObjectMapper();
-		//Object to JSON in file
-		try {
-			mapper.writeValue(new File("/data/docker-compose.yml"), dockerComposeJson);
-		} catch (JsonGenerationException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	/**
@@ -204,28 +192,15 @@ public class CreateDockercompose {
 	 */
 	private void shurenyunCompose() {
 		
-		String shurenyunCompose = "";
+		shurenyunCompose = "";
 		for(String service_name: services.keySet()) {
-			shurenyunCompose += service_name+":\n";
-			shurenyunCompose += "  cpu: 0.2\n";
-			shurenyunCompose += "  mem: 512\n";
-			shurenyunCompose += "  instances: 1\n";
+			shurenyunCompose += service_name+":\\n";
+			shurenyunCompose += "  cpu: 0.2\\n";
+			shurenyunCompose += "  mem: 512\\n";
+			shurenyunCompose += "  instances: 1\\n";
 		}
 		//log.debug(shurenyunCompose);
-		shurenyunComposeJson = JSONValue.parse(shurenyunCompose);
 		
-		ObjectMapper mapper = new ObjectMapper();
-		//Object to JSON in file
-		try {
-			mapper.writeValue(new File("/data/sry-compose.yml"), shurenyunComposeJson);
-		} catch (JsonGenerationException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	
 	}
 
 	/**
@@ -243,22 +218,20 @@ public class CreateDockercompose {
 		this.services = services;
 	}
 
-	public Object getDockerComposeJson() {
-		return dockerComposeJson;
+	public String getDockerCompose() {
+		return dockerCompose;
 	}
 
-	public void setDockerComposeJson(Object dockerComposeJson) {
-		this.dockerComposeJson = dockerComposeJson;
+	public void setDockerCompose(String dockerCompose) {
+		this.dockerCompose = dockerCompose;
 	}
 
-	public Object getShurenyunComposeJson() {
-		return shurenyunComposeJson;
+	public String getShurenyunCompose() {
+		return shurenyunCompose;
 	}
 
-	public void setShurenyunComposeJson(Object shurenyunComposeJson) {
-		this.shurenyunComposeJson = shurenyunComposeJson;
+	public void setShurenyunCompose(String shurenyunCompose) {
+		this.shurenyunCompose = shurenyunCompose;
 	}
-
-	
 
 }

@@ -41,8 +41,8 @@ public class ShurenyunApiRequestForward {
 	 * @param shurenyuncompose
 	 */
 	public SryCreateStackResponse createStack(String token, String cluster_id,String stack_name,
-					Object dockercomposeJson,
-					Object shurenyuncomposeJson){
+					String dockercompose,
+					String shurenyuncompose){
 
 		RestTemplate createStackRestTemplate = new RestTemplate();
 		createStackRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
@@ -53,17 +53,26 @@ public class ShurenyunApiRequestForward {
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Authorization", token);
 		
-		SryCreateStackRequest sryCreateStackRequest = new SryCreateStackRequest();
-		sryCreateStackRequest.setName(stack_name);
-		sryCreateStackRequest.setCompose(dockercomposeJson);
-		sryCreateStackRequest.setMarathonConfig(shurenyuncomposeJson);
+		String jsonrequest = "{\"name\":\""+stack_name+"\","+
+				"\"compose\":\""+dockercompose+"\","+
+				"\"marathonConfig\":\""+shurenyuncompose+"\"}";
 		
-		HttpEntity<SryCreateStackRequest> request = new HttpEntity<SryCreateStackRequest>(sryCreateStackRequest,requestHeaders);
-		//log.debug(createStackRestTemplate.exchange(uri, HttpMethod.POST, request,String.class).getBody());
+		log.debug(jsonrequest);
+		HttpEntity<String> request = new HttpEntity<String>(jsonrequest,requestHeaders);
 				
 		ResponseEntity<SryCreateStackResponse> responseEntity = createStackRestTemplate.exchange(uri, HttpMethod.POST, request, SryCreateStackResponse.class);
-		SryCreateStackResponse sryCreateStackResponse = responseEntity.getBody();
 		
+		//DEBUG code. Object to JSON in String
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonInString;
+		try {
+			jsonInString = mapper.writeValueAsString(responseEntity);
+			log.debug(jsonInString);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+				
+		SryCreateStackResponse sryCreateStackResponse = responseEntity.getBody();
 		return sryCreateStackResponse;
 	}
 	
@@ -86,11 +95,20 @@ public class ShurenyunApiRequestForward {
 		requestHeaders.set("Authorization", token);
 		
 		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
-		//log.debug(stackDeployRestTemplate.exchange(uri, HttpMethod.POST, request,String.class).getBody());
 				
 		ResponseEntity<SryStackDeployResponse> responseEntity = stackDeployRestTemplate.exchange(uri, HttpMethod.PUT, request, SryStackDeployResponse.class);
-		SryStackDeployResponse sryStackDeployResponse = responseEntity.getBody();
 		
+		//DEBUG code. Object to JSON in String
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonInString;
+		try {
+			jsonInString = mapper.writeValueAsString(responseEntity);
+			log.debug(jsonInString);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
+		SryStackDeployResponse sryStackDeployResponse = responseEntity.getBody();
 		return sryStackDeployResponse;
 	}
 	
@@ -114,22 +132,17 @@ public class ShurenyunApiRequestForward {
 		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
 		ResponseEntity<SrySearchStackResponse> responseEntity = searchStackRestTemplate.exchange(uri, HttpMethod.GET, request, SrySearchStackResponse.class);
 		
-		SrySearchStackResponse srySearchStackResponse = responseEntity.getBody();
-		
-		ObjectMapper mapper = new ObjectMapper();
-		
 		//DEBUG code. Object to JSON in String
-		//log.debug(searchStackRestTemplate.exchange(uri, HttpMethod.GET, request,String.class).getBody());
+		ObjectMapper mapper = new ObjectMapper();
 		String jsonInString;
 		try {
-			jsonInString = mapper.writeValueAsString(searchStackRestTemplate.exchange(uri, HttpMethod.GET, request, SrySearchStackResponse.class));
+			jsonInString = mapper.writeValueAsString(responseEntity);
 			log.debug(jsonInString);
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		
+		SrySearchStackResponse srySearchStackResponse = responseEntity.getBody();
 		return srySearchStackResponse;
 	
 	}
@@ -153,6 +166,17 @@ public class ShurenyunApiRequestForward {
 	
 		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
 		ResponseEntity<SryDelStackResponse> responseEntity = delStackRestTemplate.exchange(uri, HttpMethod.DELETE, request, SryDelStackResponse.class);
+		
+		//DEBUG code. Object to JSON in String
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonInString;
+		try {
+			jsonInString = mapper.writeValueAsString(responseEntity);
+			log.debug(jsonInString);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
 		SryDelStackResponse sryDelStackResponse = responseEntity.getBody();
 		return sryDelStackResponse;
 		
@@ -178,6 +202,17 @@ public class ShurenyunApiRequestForward {
 		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
 		
 		ResponseEntity<SryOccupiedPortResponse> responseEntity = sryOccupiedPortRestTemplate.exchange(uri, HttpMethod.GET, request, SryOccupiedPortResponse.class);
+		
+		//DEBUG code. Object to JSON in String
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonInString;
+		try {
+			jsonInString = mapper.writeValueAsString(responseEntity);
+			log.debug(jsonInString);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
 		SryOccupiedPortResponse sryOccupiedPortResponse = responseEntity.getBody();
 		return sryOccupiedPortResponse;
 		
@@ -203,11 +238,19 @@ public class ShurenyunApiRequestForward {
 		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
 		
 		ResponseEntity<SryAppStatusResponse> responseEntity = sryAppStatusRestTemplate.exchange(uri, HttpMethod.GET, request, SryAppStatusResponse.class);
+		
+		//DEBUG code. Object to JSON in String
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonInString;
+		try {
+			jsonInString = mapper.writeValueAsString(responseEntity);
+			log.debug(jsonInString);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
 		SryAppStatusResponse sryAppStatusResponse = responseEntity.getBody();
 		return sryAppStatusResponse;
 		
 	}
-	
-	
-
 }

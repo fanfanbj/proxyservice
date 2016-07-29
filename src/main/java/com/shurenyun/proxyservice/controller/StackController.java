@@ -98,12 +98,13 @@ public class StackController {
 		
 		//create docker compose and shurenyun compose.
 		createDockercompose.doCreate(docker_compose_template_yaml,images, not_occupied_ports);
-		Object dockercompose = createDockercompose.getDockerComposeJson();
-		Object shurenyuncompose = createDockercompose.getShurenyunComposeJson();
+		String dockercompose = createDockercompose.getDockerCompose();
+		String shurenyuncompose = createDockercompose.getShurenyunCompose();
 	
 		//create stack.
 		SryCreateStackResponse sryCreateStackResponse = shurenyunApiRequestForward.createStack(token,cluster_id,stack_name,dockercompose,shurenyuncompose);
-		String stack_id = sryCreateStackResponse.getData().getStack_id();
+		String stack_id = sryCreateStackResponse.getData().getStackId();
+		log.debug(stack_id);
 		
 		//create AddStackResponse.
 		AddStackResponse addStackResponse = new AddStackResponse();

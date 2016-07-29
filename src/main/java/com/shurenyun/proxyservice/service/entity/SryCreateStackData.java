@@ -5,16 +5,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SryCreateStackData {
 	
-	String stack_id;
+	String stackId;
 	//error
 	String message;
 
-	public String getStack_id() {
-		return stack_id;
+	public String getStackId() {
+		return stackId;
 	}
 
-	public void setStack_id(String stack_id) {
-		this.stack_id = stack_id;
+	public void setStackId(String stackId) {
+		this.stackId = stackId;
 	}
 
 	public String getMessage() {
