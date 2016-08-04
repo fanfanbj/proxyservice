@@ -1,22 +1,16 @@
 package com.shurenyun.proxyservice.service;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.simple.JSONValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.shurenyun.proxyservice.domain.ServiceCompose;
 import com.shurenyun.proxyservice.util.YamlFileParser;
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shurenyun.proxyservice.domain.EQImage;
 
 @Service
@@ -96,7 +90,7 @@ public class CreateDockercompose {
 			if(template_ports!=null) {
 				for(String template_port: template_ports) {
 					String template_port_tag = template_port.split(":")[0];
-					ports.add("\\\""+Long.toString(not_occupy_port)+":"+Long.toString(not_occupy_port)+"\\\"");
+					ports.add("\\\""+Long.toString(not_occupy_port)+":"+template_port.split(":")[1]+"\\\"");
 					service_port_map.put(template_port_tag, Long.toString(not_occupy_port));
 					i++;
 				}

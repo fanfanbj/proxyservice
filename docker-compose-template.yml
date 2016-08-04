@@ -8,9 +8,9 @@ sampleconfig:
   links:
     - sampleeureka
   environment:
-     EUREKA_HOST: sampleeureka
-     EUREKA_PORT: $EUREKA_PORT$
-     SERVER_PORT: $SERVER_PORT$
+     eureka.host: sampleeureka
+     eureka.port: $EUREKA_PORT$
+     server.port: $SERVER_PORT$
   ports:
     - "$CONFIG_PORT$:8888"
 
@@ -20,10 +20,10 @@ sampleservice:
     - sampleeureka
     - sampleconfig
   environment:
-     EUREKA_HOST: sampleeureka
-     EUREKA_PORT: $EUREKA_PORT$
-     SERVER_PORT: $SERVER_PORT$
-     SPRING_PROFILES_ACTIVE: docker
+     eureka.host: sampleeureka
+     eureka.port: $EUREKA_PORT$
+     server.port: $SERVER_PORT$
+     spring.profiles.active: docker
   ports:
     - "$SERVICE_PORT_1$:8080"
 
@@ -34,10 +34,10 @@ sampleaggregate1:
     - sampleconfig
     - sampleservice
   environment:
-     EUREKA_HOST: sampleeureka
-     EUREKA_PORT: $EUREKA_PORT$
-     SERVER_PORT: $SERVER_PORT$
-     SPRING_PROFILES_ACTIVE: docker
+     eureka.host: sampleeureka
+     eureka.port: $EUREKA_PORT$
+     server.port: $SERVER_PORT$
+     spring.profiles.active: docker
 
 sampleaggregate2:
   image: index.shurenyun.com/library/sample-hystrix-aggregate:1.0.1-SNAPSHOT
@@ -46,10 +46,10 @@ sampleaggregate2:
     - sampleconfig
     - sampleservice
   environment:
-     EUREKA_HOST: sampleeureka
-     EUREKA_PORT: $EUREKA_PORT$
-     SERVER_PORT: $SERVER_PORT$
-     SPRING_PROFILES_ACTIVE: docker
+     eureka.host: sampleeureka
+     eureka.port: $EUREKA_PORT$
+     server.port: $SERVER_PORT$
+     spring.profiles.active: docker
 
 samplegateway:
   image: index.shurenyun.com/library/sample-hystrix-gateway:1.0.1-SNAPSHOT
@@ -59,10 +59,10 @@ samplegateway:
     - sampleaggregate1
     - sampleaggregate2
   environment:
-     EUREKA_HOST: sampleeureka
-     EUREKA_PORT: $EUREKA_PORT$
-     SERVER_PORT: $SERVER_PORT$
-     SPRING_PROFILES_ACTIVE: docker
+     eureka.host: sampleeureka
+     eureka.port: $EUREKA_PORT$
+     server.port: $SERVER_PORT$
+     spring.profiles.active: docker
   ports:
     - "$SERVER_PORT$:8080"
 
@@ -75,9 +75,9 @@ samplemonitor:
     - sampleaggregate1
     - sampleaggregate2
   environment:
-     EUREKA_HOST: sampleeureka
-     EUREKA_PORT: $EUREKA_PORT$
-     SERVER_PORT: $SERVER_PORT$
-     SPRING_PROFILES_ACTIVE: docker
+     eureka.host: sampleeureka
+     eureka.port: $EUREKA_PORT$
+     server.port: $SERVER_PORT$
+     spring.profiles.active: docker
   ports:
     - "$SERVICE_PORT_2$:8080"
