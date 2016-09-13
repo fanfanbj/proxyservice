@@ -3,18 +3,12 @@ package com.shurenyun.proxyservice.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.shurenyun.proxyservice.controller.vo.AddStackRequest;
-import com.shurenyun.proxyservice.controller.vo.AddStackResponse;
-import com.shurenyun.proxyservice.controller.vo.DelStackResponse;
-import com.shurenyun.proxyservice.controller.vo.GetStackResponse;
 import com.shurenyun.proxyservice.domain.ServiceCompose;
 import com.shurenyun.proxyservice.domain.EQImage;
 import com.shurenyun.proxyservice.service.CreateDabCompose;
 import com.shurenyun.proxyservice.service.RetrieveDockercomposeTemplate;
 import com.shurenyun.proxyservice.service.RetrieveNotOccupiedPort;
 import com.shurenyun.proxyservice.service.ShurenyunApiRequestForward2;
-import com.shurenyun.proxyservice.service.entity.SryCreateStackResponse;
-import com.shurenyun.proxyservice.service.entity.SryDelStackResponse;
-import com.shurenyun.proxyservice.service.entity.SrySearchStackResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -79,7 +73,7 @@ public class StackController {
 		createDabCompose.doCreate(docker_compose_template_yaml,images, not_occupied_ports);
 		String dab = createDabCompose.getDab();
 			
-		//create stack.
+		//invoke stack API.
 		String result = "";
 		try{
 			result = shurenyunApiRequestForward2.createStack(stack_name,dab);
@@ -101,7 +95,7 @@ public class StackController {
 		
 		String result = "";
 		try{
-			//search stack
+			//invoke inspect stack API.
 			shurenyunApiRequestForward2.searchStack(stack_name);
 		}catch(Exception e){
 			result = e.getMessage();
@@ -117,7 +111,7 @@ public class StackController {
 			log.debug("DELETE /stack/"+stack_name);
 			String result = "";
 			try{
-				//delete stack
+				//invoke delete stack API.
 				result = shurenyunApiRequestForward2.delStack(stack_name);
 			}catch(Exception e){
 				result = e.getMessage();

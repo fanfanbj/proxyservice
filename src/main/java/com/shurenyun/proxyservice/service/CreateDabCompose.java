@@ -16,12 +16,11 @@ import com.shurenyun.proxyservice.domain.EQImage;
 @Service
 public class CreateDabCompose {
 	
-	private static final Object service_name = null;
-
 	// Define the logger object for this class
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	Map<String,ServiceCompose> services;
+	
 	String dab;
 	
 	public void doCreate(Map<String,ServiceCompose> docker_compose_template_yaml,
@@ -37,14 +36,14 @@ public class CreateDabCompose {
 		//get service port.
 		getServicePortResource(not_occupied_ports);
 		
-		//save service.
-		saveServiceResource();
+		//create service dab.
+		createServiceDab();
 		
 		
 	}
 	
 	/**
-	 * get service tag resource.
+	 * get image name and tag.
 	 * @param images
 	 */
 	private void getServiceTagResource(List<EQImage> images) {
@@ -67,7 +66,7 @@ public class CreateDabCompose {
 	}
 	
 	/**
-	 * get service port resource.
+	 * get port.
 	 * @param docker_componse_template_yaml
 	 */
 	private void getServicePortResource(List<Long> not_occupied_ports) {
@@ -123,10 +122,38 @@ public class CreateDabCompose {
 	}
 	
 	/**
-	 * save service resource to yml.
-	 * @param services
+	 * create dab.
+	 *	dab example for service....	      
+		
+		"sampleconfig": {
+	      "Name": "sampleconfig",
+	      "TaskTemplate": {
+	        "ContainerSpec": {
+	          "Image": "index.shurenyun.com/library/sample-hystrix-config:1.0.1-SNAPSHOT",
+	          "Env": [
+	            "EUREKA_HOST=sampleeureka",
+	            "EUREKA_PORT=$EUREKA_PORT$",
+	            "SERVER_PORT=$SERVER_PORT$"
+	          ]
+	        }
+	      },
+	      "Networks": [
+	        "ingress"
+	      ],
+	      "EndpointSpec": {
+	        "Mode": "vip",
+	        "Ports": [
+	          {
+	            "Name": "pbport",
+	            "Protocol": "tcp",
+	            "TargetPort": $CONFIG_PORT$,
+	            "PublishedPort": 8888
+	          }
+	        ]
+	      }
+	    },
 	 */
-	private void saveServiceResource() {
+	private void createServiceDab() {
 		
 		dab = "";
 	
@@ -140,35 +167,7 @@ public class CreateDabCompose {
 						env.replaceAll("^\\s+|\\s+$", "")+",";
 			}
 		
-//		dab example for service....	      
-//			"sampleconfig": {
-//	      "Name": "sampleconfig",
-//	      "TaskTemplate": {
-//	        "ContainerSpec": {
-//	          "Image": "index.shurenyun.com/library/sample-hystrix-config:1.0.1-SNAPSHOT",
-//	          "Env": [
-//	            "EUREKA_HOST=sampleeureka",
-//	            "EUREKA_PORT=$EUREKA_PORT$",
-//	            "SERVER_PORT=$SERVER_PORT$"
-//	          ]
-//	        }
-//	      },
-//	      "Networks": [
-//	        "ingress"
-//	      ],
-//	      "EndpointSpec": {
-//	        "Mode": "vip",
-//	        "Ports": [
-//	          {
-//	            "Name": "pbport",
-//	            "Protocol": "tcp",
-//	            "TargetPort": $CONFIG_PORT$,
-//	            "PublishedPort": 8888
-//	          }
-//	        ]
-//	      }
-//	    },
-			
+
 			dab += 
 				 "\""+service_name+"\": { "+
 				 "\"Name\": \""+service_name+"\","+
