@@ -23,13 +23,8 @@ import com.shurenyun.proxyservice.service.entity.SrySearchStackResponse;
 import com.shurenyun.proxyservice.service.entity.SryStackDeployResponse;
 import com.shurenyun.proxyservice.util.ServiceProperties;
 
-/**
- * Deprecated
- * @author fanbin
- *
- */
 @Service
-public class ShurenyunApiRequestForward {
+public class ShurenyunApiRequestForward2 {
 	
 	// Define the logger object for this class
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -45,24 +40,20 @@ public class ShurenyunApiRequestForward {
 	 * @param dockercompose
 	 * @param shurenyuncompose
 	 */
-	public SryCreateStackResponse createStack(String token, String cluster_id,String stack_name,
-					String dockercompose,
-					String shurenyuncompose){
+	public SryCreateStackResponse createStack(String stack_name,String dab){
 
 		RestTemplate createStackRestTemplate = new RestTemplate();
 		createStackRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 		createStackRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
         
-		String uri = new String(this.configuration.getApi()+"/clusters/"+cluster_id+"/stacks");
+		String uri = new String(this.configuration.getApi()+"/stacks");
 		
 		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Authorization", token);
 		
 		String jsonrequest = "{\"name\":\""+stack_name+"\","+
-				"\"compose\":\""+dockercompose+"\","+
-				"\"marathonConfig\":\""+shurenyuncompose+"\"}";
-		
+				"\"dab\":\""+dab+"\"}";
 		log.debug(jsonrequest);
+		
 		HttpEntity<String> request = new HttpEntity<String>(jsonrequest,requestHeaders);
 				
 		ResponseEntity<SryCreateStackResponse> responseEntity = createStackRestTemplate.exchange(uri, HttpMethod.POST, request, SryCreateStackResponse.class);
@@ -82,57 +73,20 @@ public class ShurenyunApiRequestForward {
 	}
 	
 	/**
-	 * deploy stack.
-	 * @param token
-	 * @param cluser_id
-	 * @param stack_id
-	 * @return
-	 */
-	public SryStackDeployResponse stackDeploy(String token,String cluster_id,String stack_id) {
-		
-		 RestTemplate stackDeployRestTemplate = new RestTemplate();
-		 stackDeployRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-		 stackDeployRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
-        
-		String uri = new String(this.configuration.getApi()+"/clusters/"+cluster_id+"/stacks/"+stack_id+"/deploy");
-		
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Authorization", token);
-		
-		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
-				
-		ResponseEntity<SryStackDeployResponse> responseEntity = stackDeployRestTemplate.exchange(uri, HttpMethod.PUT, request, SryStackDeployResponse.class);
-		
-		//DEBUG code. Object to JSON in String
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonInString;
-		try {
-			jsonInString = mapper.writeValueAsString(responseEntity);
-			log.debug(jsonInString);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-		
-		SryStackDeployResponse sryStackDeployResponse = responseEntity.getBody();
-		return sryStackDeployResponse;
-	}
-	
-	/**
 	 * search stack.
 	 * @param token
 	 * @param cluster_id
 	 * @param stack_id
 	 */
-	public SrySearchStackResponse searchStack(String token, String cluster_id, String stack_id) {
+	public SrySearchStackResponse searchStack(String stack_name) {
 		
 		RestTemplate searchStackRestTemplate = new RestTemplate();
 		searchStackRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 		searchStackRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
         
-		String uri = new String(this.configuration.getApi()+"/clusters/"+cluster_id+"/stacks/"+stack_id);
+		String uri = new String(this.configuration.getApi()+"/api/v1/stacks/"+stack_name);
 		
 		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Authorization", token);
 	
 		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
 		ResponseEntity<SrySearchStackResponse> responseEntity = searchStackRestTemplate.exchange(uri, HttpMethod.GET, request, SrySearchStackResponse.class);

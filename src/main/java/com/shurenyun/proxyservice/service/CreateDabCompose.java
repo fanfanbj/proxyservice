@@ -13,21 +13,15 @@ import com.shurenyun.proxyservice.domain.ServiceCompose;
 import com.shurenyun.proxyservice.util.YamlFileParser;
 import com.shurenyun.proxyservice.domain.EQImage;
 
-/**
- * Deprecated
- * @author fanbin
- *
- */
 @Service
-public class CreateDockercompose {
+public class CreateDabCompose {
 	
 	// Define the logger object for this class
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	Map<String,ServiceCompose> services;
-	String dockerCompose;
-	String shurenyunCompose;
-
+	String dab;
+	
 	public void doCreate(Map<String,ServiceCompose> docker_compose_template_yaml,
 			List<EQImage> images,
 			List<Long> not_occupied_ports) {
@@ -41,14 +35,9 @@ public class CreateDockercompose {
 		//get service port resource.
 		getServicePortResource(not_occupied_ports);
 		
-		//print service resource.
-//		printServiceResource();
-		
 		//save service resource.
 		saveServiceResource();
 		
-		//create shurenyun compose.
-		//shurenyunCompose();
 		
 	}
 	
@@ -146,61 +135,10 @@ public class CreateDockercompose {
 	 */
 	private void saveServiceResource() {
 		
-		dockerCompose = "";
-		for(String service_name: services.keySet()) {
-			dockerCompose += service_name+":\\n";
-			ServiceCompose serviceCompose = (ServiceCompose)services.get(service_name);
-			//image.
-			dockerCompose += "  image: "+serviceCompose.getImage()+"\\n";
-			//ports.
-			if(serviceCompose.getPorts()!=null && serviceCompose.getPorts().size()>0) {
-				dockerCompose += "  ports:\\n";
-				for(String port:serviceCompose.getPorts()){
-					dockerCompose += "    - "+port.replaceAll("^\\s+|\\s+$", "")+"\\n";
-				}
-			}
-			//links.
-			if(serviceCompose.getLinks()!=null && serviceCompose.getLinks().size()>0) {
-				dockerCompose += "  links:\\n";
-				for(String link:serviceCompose.getLinks()){
-					dockerCompose += "    - "+link.replaceAll("^\\s+|\\s+$", "")+"\\n";
-				}
-			}	
-			//environment.
-			if(serviceCompose.getEnv()!=null && serviceCompose.getEnv().size()>0) {
-				dockerCompose += "  environment:\\n"; 
-				for(String env:serviceCompose.getEnv()){
-					dockerCompose += "    "+env.replaceAll("^\\s+|\\s+$", "")+"\\n";
-				}
-			}	
-			//volume.
-			if(serviceCompose.getVolumes()!=null && serviceCompose.getVolumes().size()>0) {
-				dockerCompose += "  volumes:\\n";
-				for(String volume:serviceCompose.getVolumes()){
-					dockerCompose += "    - "+volume.replaceAll("^\\s+|\\s+$", "")+"\\n";
-				}
-			}	
-		}
-		//log.debug(dockerCompose);
+		
 		
 	}
 	
-	/**
-	 * create shurenyun compose.
-	 * @param services
-	 */
-	private void shurenyunCompose() {
-		
-		shurenyunCompose = "";
-		for(String service_name: services.keySet()) {
-			shurenyunCompose += service_name+":\\n";
-			shurenyunCompose += "  cpu: 0.2\\n";
-			shurenyunCompose += "  mem: 512\\n";
-			shurenyunCompose += "  instances: 1\\n";
-		}
-		//log.debug(shurenyunCompose);
-		
-	}
 
 	/**
 	 * get services.
@@ -209,28 +147,14 @@ public class CreateDockercompose {
 	public Map<String, ServiceCompose> getServices() {
 		return services;
 	}
-	/**
-	 * set services.
-	 * @param services
-	 */
-	public void setServices(Map<String, ServiceCompose> services) {
-		this.services = services;
+
+	public String getDab() {
+		return dab;
 	}
 
-	public String getDockerCompose() {
-		return dockerCompose;
+	public void setDab(String dab) {
+		this.dab = dab;
 	}
-
-	public void setDockerCompose(String dockerCompose) {
-		this.dockerCompose = dockerCompose;
-	}
-
-	public String getShurenyunCompose() {
-		return shurenyunCompose;
-	}
-
-	public void setShurenyunCompose(String shurenyunCompose) {
-		this.shurenyunCompose = shurenyunCompose;
-	}
+	
 
 }

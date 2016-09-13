@@ -2,28 +2,20 @@ package com.shurenyun.proxyservice.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.shurenyun.proxyservice.service.entity.SryAppStatus;
-import com.shurenyun.proxyservice.service.entity.SryAppStatusResponse;
-import com.shurenyun.proxyservice.service.entity.SryApplication;
 import com.shurenyun.proxyservice.controller.vo.AddStackRequest;
 import com.shurenyun.proxyservice.controller.vo.AddStackResponse;
 import com.shurenyun.proxyservice.controller.vo.DelStackResponse;
 import com.shurenyun.proxyservice.controller.vo.GetStackResponse;
 import com.shurenyun.proxyservice.domain.ServiceCompose;
-import com.shurenyun.proxyservice.domain.EQApp;
 import com.shurenyun.proxyservice.domain.EQImage;
-import com.shurenyun.proxyservice.service.CreateDockercompose;
+import com.shurenyun.proxyservice.service.CreateDabCompose;
 import com.shurenyun.proxyservice.service.RetrieveDockercomposeTemplate;
 import com.shurenyun.proxyservice.service.RetrieveNotOccupiedPort;
-import com.shurenyun.proxyservice.service.ShurenyunApiAccess;
-import com.shurenyun.proxyservice.service.ShurenyunApiRequestForward;
-import com.shurenyun.proxyservice.service.entity.SryDeployedApplication;
+import com.shurenyun.proxyservice.service.ShurenyunApiRequestForward2;
 import com.shurenyun.proxyservice.service.entity.SryCreateStackResponse;
 import com.shurenyun.proxyservice.service.entity.SryDelStackResponse;
 import com.shurenyun.proxyservice.service.entity.SrySearchStackResponse;
-import com.shurenyun.proxyservice.service.entity.SryStackDeployResponse;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
@@ -48,19 +40,16 @@ public class StackController {
  	private final Logger log = LoggerFactory.getLogger(this.getClass());
  	
  	@Autowired
+	RetrieveDockercomposeTemplate retrieveDockercomposeTemplate;
+	
+ 	@Autowired
 	RetrieveNotOccupiedPort retrieveNotOccupiedPort;
 
 	@Autowired
-	RetrieveDockercomposeTemplate retrieveDockercomposeTemplate;
+	CreateDabCompose createDabCompose;
 	
 	@Autowired
-	CreateDockercompose createDockercompose;
-	
-	@Autowired
-	ShurenyunApiAccess shurenyunApiAccess;
-	
-	@Autowired
-	ShurenyunApiRequestForward shurenyunApiRequestForward;
+	ShurenyunApiRequestForward2 shurenyunApiRequestForward2;
 
 	@RequestMapping(
 		method = RequestMethod.POST,
@@ -70,50 +59,35 @@ public class StackController {
 	public AddStackResponse create(@Valid @RequestBody AddStackRequest addStackRequest) {
 		String svn_url = addStackRequest.getSvn_url();
 		String stack_name = addStackRequest.getStack_name();
-		String cluster_id = addStackRequest.getCluster_id();
 		List<EQImage> images = addStackRequest.getImages();
 		
 		String inputmessage = " svn_url:"+svn_url+
-							  " stack_name:"+stack_name+
-							  " cluster_id:"+cluster_id;
+							  " stack_name:"+stack_name;
 		log.debug("POST /stack "+inputmessage);
 		
 		//retrieve docker compose template.
 		Map<String,ServiceCompose> docker_compose_template_yaml = retrieveDockercomposeTemplate.doGet(svn_url);
-		
-		//invoke shurenyun create stack API.
-		String token = shurenyunApiAccess.doAuthentication();
 
 		//need to use lock, when retrieve free ports for services.
 		Lock lock = new ReentrantLock();
 		lock.lock();
 		
+		// TODO BEGIN.
 		//get resource port. 
-		List<Long> not_occupied_ports = retrieveNotOccupiedPort.getPorts(token, cluster_id); 
+		List<Long> not_occupied_ports = retrieveNotOccupiedPort.getPorts(); 
 		
-		//create docker compose and shurenyun compose.
-		createDockercompose.doCreate(docker_compose_template_yaml,images, not_occupied_ports);
-		String dockercompose = createDockercompose.getDockerCompose();
-		String shurenyuncompose = createDockercompose.getShurenyunCompose();
-	
+		//create dab compose.
+		createDabCompose.doCreate(docker_compose_template_yaml,images, not_occupied_ports);
+		String dab = createDabCompose.getDab();
+		
 		//create stack.
-		SryCreateStackResponse sryCreateStackResponse = shurenyunApiRequestForward.createStack(token,cluster_id,stack_name,dockercompose,shurenyuncompose);
-		String stack_id = sryCreateStackResponse.getData().getStackId();
-		log.debug(stack_id);
+		SryCreateStackResponse sryCreateStackResponse = shurenyunApiRequestForward2.createStack(stack_name,dab);
 		
 		//create AddStackResponse.
 		AddStackResponse addStackResponse = new AddStackResponse();
-		addStackResponse.setCluster_id(cluster_id);
-		addStackResponse.setStack_id(stack_id);
-			
-		if(stack_id!=null){
-			//deploy stack.
-			SryStackDeployResponse sryStackDeployResponse = shurenyunApiRequestForward.stackDeploy(token,cluster_id,stack_id);
-			addStackResponse.setError_message(sryStackDeployResponse.getData().getMessage());
-		}{
-			//create stack error.
-			addStackResponse.setError_message(sryCreateStackResponse.getData().getMessage());
-		}
+		addStackResponse.setStatus(Integer.toString(sryCreateStackResponse.getCode()));
+		addStackResponse.setError_message(sryCreateStackResponse.getData().getMessage());
+		//TODO END.
 		lock.unlock();
 		return addStackResponse;
 		
@@ -121,88 +95,37 @@ public class StackController {
 	
 	@RequestMapping(
 			method = RequestMethod.GET,
-			value = "/cluster/{cluster_id}/stack/{stack_id}",
+			value = "/stack/{stack_name}",
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public GetStackResponse get(@PathVariable("cluster_id") String cluster_id,
-				          @PathVariable("stack_id") String stack_id ) {
-		log.debug("GET /cluster/"+cluster_id+"/stack/"+stack_id);
+	public GetStackResponse get(@PathVariable("stack_name") String stack_name ) {
+		
+		log.debug("GET /stack/"+stack_name);
 	
-		//invoke shurenyun get stack API.
-		String token = shurenyunApiAccess.doAuthentication();
-		SrySearchStackResponse srySearchStackResponse = shurenyunApiRequestForward.searchStack(token,cluster_id,stack_id);
-		
-		List<SryDeployedApplication> deployedApplications = srySearchStackResponse.getData().getDeployedApplications();
-		List<SryApplication> applications = srySearchStackResponse.getData().getApplications();
-
-//		Debug code.
-//		ObjectMapper mapper = new ObjectMapper();
-//		
-//		//Object to JSON in String
-//		String jsonInString;
-//		try {
-//			jsonInString = mapper.writeValueAsString(deployedApplication);
-//			log.debug(jsonInString);
-//		} catch (JsonProcessingException e) {
-//			e.printStackTrace();
-//		}
-		
-		//create app_list.
-		List<EQApp> app_list = new ArrayList<EQApp>();
-		for(SryDeployedApplication deployedApplication:deployedApplications){
-			int id = deployedApplication.getId();
-			String name = deployedApplication.getName();
-			EQApp eqapp = new EQApp();
-			eqapp.setId(id);
-			eqapp.setName(name);
-			eqapp.setStatus("deployed");
-			app_list.add(eqapp);
-		}
-		
-		for(SryApplication application:applications){
-			String name = application.getName();
-			EQApp eqapp = new EQApp();
-			eqapp.setName(name);
-			if(!app_list.contains(eqapp)){
-				app_list.add(eqapp);
-			}
-		}
-		
-		//get App status.
-		for(EQApp eqapp:app_list) {
-			int id = eqapp.getId();
-			if(id != 0) {
-				int app_id = id;
-				SryAppStatusResponse sryAppStatusResponse = shurenyunApiRequestForward.getAppStatus(token, Long.parseLong(cluster_id), app_id);
-				int status_code =  sryAppStatusResponse.getData().getStatus();
-				eqapp.setStatus(SryAppStatus.fromStatusId(status_code));
-			
-			}
-		}
+		SrySearchStackResponse srySearchStackResponse = shurenyunApiRequestForward2.searchStack(stack_name);
 		
 		//create GetStackResponse.	
 		GetStackResponse getStackResponse = new GetStackResponse();
-		getStackResponse.setApp_list(app_list);
 		getStackResponse.setStatus(Integer.toString(srySearchStackResponse.getCode()));
 		getStackResponse.setError_message(srySearchStackResponse.getData().getMessage());
+	
 		return getStackResponse;
 	}
 	
 	@RequestMapping(
 			method = RequestMethod.DELETE,
-			value = "/cluster/{cluster_id}/stack/{stack_id}",
+			value = "/stack/{stack_name}",
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public DelStackResponse delete(@PathVariable("cluster_id") String cluster_id,
-					          @PathVariable("stack_id") String stack_id ) {
-			log.debug("DELETE /cluster/"+cluster_id+"/stack/"+stack_id);
+	public DelStackResponse delete(@PathVariable("stack_name") String stack_name ) {
+			log.debug("DELETE /stack/"+stack_name);
 			
 			//invoke shurenyun get stack API.
-			String token = shurenyunApiAccess.doAuthentication();
-			SryDelStackResponse sryDelStackResponse = shurenyunApiRequestForward.delStack(token,cluster_id,stack_id);
+			SryDelStackResponse sryDelStackResponse = shurenyunApiRequestForward2.delStack(stack_name);
 			
 			//create DelStackResponse.
 			DelStackResponse delStackResponse = new DelStackResponse();
 			delStackResponse.setStatus(Integer.toString(sryDelStackResponse.getCode()));
 			delStackResponse.setError_message(sryDelStackResponse.getData().getMessage());
+		
 			return delStackResponse;
 	}
 

@@ -30,4 +30,10 @@ public class RetrieveNotOccupiedPort {
 		}
 		return not_occupied_ports;
 	}
+	
+	//get port by invoking swarm /services API.
+	public List<Long> getPorts() {
+		List<Long> not_occupied_ports = new ArrayList<Long>();
+		return not_occupied_ports;
+	}
 }
