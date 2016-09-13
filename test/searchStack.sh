@@ -1,3 +1,3 @@
 #!/bin/bash
 
-curl -X GET "http://localhost:8090/cluster/2453/stack/103"
+curl -X GET "http://localhost:8090/stack/2048"

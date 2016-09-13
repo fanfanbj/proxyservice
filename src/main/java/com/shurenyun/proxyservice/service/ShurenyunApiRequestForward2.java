@@ -14,14 +14,15 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shurenyun.proxyservice.service.entity.SryAppStatusResponse;
-import com.shurenyun.proxyservice.service.entity.SryCreateStackRequest;
-import com.shurenyun.proxyservice.service.entity.SryCreateStackResponse;
-import com.shurenyun.proxyservice.service.entity.SryDelStackResponse;
 import com.shurenyun.proxyservice.service.entity.SryOccupiedPortResponse;
-import com.shurenyun.proxyservice.service.entity.SrySearchStackResponse;
-import com.shurenyun.proxyservice.service.entity.SryStackDeployResponse;
 import com.shurenyun.proxyservice.util.ServiceProperties;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 @Service
 public class ShurenyunApiRequestForward2 {
@@ -40,7 +41,7 @@ public class ShurenyunApiRequestForward2 {
 	 * @param dockercompose
 	 * @param shurenyuncompose
 	 */
-	public SryCreateStackResponse createStack(String stack_name,String dab){
+	public String createStack(String stack_name,String dab){
 
 		RestTemplate createStackRestTemplate = new RestTemplate();
 		createStackRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
@@ -50,26 +51,36 @@ public class ShurenyunApiRequestForward2 {
 		
 		HttpHeaders requestHeaders = new HttpHeaders();
 		
-		String jsonrequest = "{\"name\":\""+stack_name+"\","+
-				"\"dab\":\""+dab+"\"}";
+//		request example...	
+//		 {
+//		     "Namespace":"test-2",
+//		     "Stack"{
+//		        "Services": {
+//		          "redis": {
+//		            "Image": "redis"
+//		          }
+//		         },
+//		        "Version": "0.1"
+//		      }
+//		    }
+
+		String jsonrequest = "{"+
+				     "\"Namespace\":\""+stack_name+"\","+
+				     "\"Stack\"{"+
+				     "\"Services\": {"+
+				     dab+
+				     "},"+
+				     "\"Version\": \"0.1\""+
+				     "}}";
+	
 		log.debug(jsonrequest);
 		
 		HttpEntity<String> request = new HttpEntity<String>(jsonrequest,requestHeaders);
 				
-		ResponseEntity<SryCreateStackResponse> responseEntity = createStackRestTemplate.exchange(uri, HttpMethod.POST, request, SryCreateStackResponse.class);
+		ResponseEntity<String> responseEntity = createStackRestTemplate.exchange(uri, HttpMethod.POST, request, String.class);
 		
-		//DEBUG code. Object to JSON in String
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonInString;
-		try {
-			jsonInString = mapper.writeValueAsString(responseEntity);
-			log.debug(jsonInString);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-				
-		SryCreateStackResponse sryCreateStackResponse = responseEntity.getBody();
-		return sryCreateStackResponse;
+		log.debug(responseEntity.getBody().toString());
+		return responseEntity.getBody().toString();
 	}
 	
 	/**
@@ -78,7 +89,7 @@ public class ShurenyunApiRequestForward2 {
 	 * @param cluster_id
 	 * @param stack_id
 	 */
-	public SrySearchStackResponse searchStack(String stack_name) {
+	public String searchStack(String stack_name) {
 		
 		RestTemplate searchStackRestTemplate = new RestTemplate();
 		searchStackRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
@@ -86,23 +97,12 @@ public class ShurenyunApiRequestForward2 {
         
 		String uri = new String(this.configuration.getApi()+"/api/v1/stacks/"+stack_name);
 		
-		HttpHeaders requestHeaders = new HttpHeaders();
-	
-		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
-		ResponseEntity<SrySearchStackResponse> responseEntity = searchStackRestTemplate.exchange(uri, HttpMethod.GET, request, SrySearchStackResponse.class);
+		HttpEntity<String> request = new HttpEntity<String>("");
+		ResponseEntity<String> responseEntity = searchStackRestTemplate.exchange(uri, HttpMethod.GET, request, String.class);
 		
-		//DEBUG code. Object to JSON in String
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonInString;
-		try {
-			jsonInString = mapper.writeValueAsString(responseEntity);
-			log.debug(jsonInString);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
+		log.debug(responseEntity.getBody().toString());
 		
-		SrySearchStackResponse srySearchStackResponse = responseEntity.getBody();
-		return srySearchStackResponse;
+		return responseEntity.getBody().toString();
 	
 	}
 	
@@ -112,7 +112,7 @@ public class ShurenyunApiRequestForward2 {
 	 * @param cluster_id
 	 * @param stack_id
 	 */
-	public SryDelStackResponse delStack(String stack_name) {
+	public String delStack(String stack_name) throws Exception {
 		
 		RestTemplate delStackRestTemplate = new RestTemplate();
 		delStackRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
@@ -120,23 +120,11 @@ public class ShurenyunApiRequestForward2 {
         
 		String uri = new String(this.configuration.getApi()+"/api/v1/stacks/"+stack_name);
 		
-		HttpHeaders requestHeaders = new HttpHeaders();
-		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
-		ResponseEntity<SryDelStackResponse> responseEntity = delStackRestTemplate.exchange(uri, HttpMethod.DELETE, request, SryDelStackResponse.class);
+		HttpEntity<String> request = new HttpEntity<String>("");
+		ResponseEntity<String> responseEntity = delStackRestTemplate.exchange(uri, HttpMethod.DELETE, request, String.class);
 		
-		//DEBUG code. Object to JSON in String
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonInString;
-		try {
-			jsonInString = mapper.writeValueAsString(responseEntity);
-			log.debug(jsonInString);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-		
-		SryDelStackResponse sryDelStackResponse = responseEntity.getBody();
-		return sryDelStackResponse;
-		
+		return responseEntity.getBody().toString();
+	
 	}
 	
 	/**
@@ -145,69 +133,27 @@ public class ShurenyunApiRequestForward2 {
 	 * @param cluster_id
 	 * @return
 	 */
-	public SryOccupiedPortResponse getOccupedPorts(String token,String cluster_id) {
+	public List<Long> getOccupedPorts() {
 		
 		RestTemplate sryOccupiedPortRestTemplate = new RestTemplate();
 		sryOccupiedPortRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 		sryOccupiedPortRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
         
-		String uri = new String(this.configuration.getApi()+"/clusters/"+cluster_id+"/ports");
+		String uri = new String(this.configuration.getSwarmmgt()+"/services");
+		log.debug(uri);
 		
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Authorization", token);
-	
-		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
+		HttpEntity<String> request = new HttpEntity<String>("");
 		
-		ResponseEntity<SryOccupiedPortResponse> responseEntity = sryOccupiedPortRestTemplate.exchange(uri, HttpMethod.GET, request, SryOccupiedPortResponse.class);
-		
-		//DEBUG code. Object to JSON in String
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonInString;
-		try {
-			jsonInString = mapper.writeValueAsString(responseEntity);
-			log.debug(jsonInString);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+		ResponseEntity<JSONArray> responseEntity = sryOccupiedPortRestTemplate.exchange(uri, HttpMethod.GET, request, JSONArray.class);
+		JSONArray services = responseEntity.getBody();
+		List<Long> list = new ArrayList<Long>();
+		for(int i=0;i< services.size();i++) {
+			JSONObject innerObj = (JSONObject) services.get(i); 
+			JSONObject endpoint = (JSONObject)innerObj.get("Endpoint");
+			JSONObject ports = (JSONObject)endpoint.get("Ports");
+			String publishedPort = (String)ports.get("PublishedPort");
+			list.add(Long.parseLong(publishedPort));
 		}
-		
-		SryOccupiedPortResponse sryOccupiedPortResponse = responseEntity.getBody();
-		return sryOccupiedPortResponse;
-		
+		return list;
 	} 
-	
-	/**
-	 * get App Status.
-	 * @param token
-	 * @param app_id
-	 * @return
-	 */
-	public SryAppStatusResponse getAppStatus(String token, long cluster_id, long app_id) {
-		
-		RestTemplate sryAppStatusRestTemplate = new RestTemplate();
-		sryAppStatusRestTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-		sryAppStatusRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
-        
-		String uri = new String(this.configuration.getApi()+"/clusters/"+cluster_id+"/apps/"+app_id+"/status");
-		
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.set("Authorization", token);
-	
-		HttpEntity<String> request = new HttpEntity<String>(requestHeaders);
-		
-		ResponseEntity<SryAppStatusResponse> responseEntity = sryAppStatusRestTemplate.exchange(uri, HttpMethod.GET, request, SryAppStatusResponse.class);
-		
-		//DEBUG code. Object to JSON in String
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonInString;
-		try {
-			jsonInString = mapper.writeValueAsString(responseEntity);
-			log.debug(jsonInString);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-		
-		SryAppStatusResponse sryAppStatusResponse = responseEntity.getBody();
-		return sryAppStatusResponse;
-		
-	}
 }

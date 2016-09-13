@@ -16,6 +16,8 @@ import com.shurenyun.proxyservice.domain.EQImage;
 @Service
 public class CreateDabCompose {
 	
+	private static final Object service_name = null;
+
 	// Define the logger object for this class
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -26,16 +28,16 @@ public class CreateDabCompose {
 			List<EQImage> images,
 			List<Long> not_occupied_ports) {
 		
-		//initial.
+		//initial to get services.
 		services = docker_compose_template_yaml;
 		
-		//get service tag resource.
+		//get service tag.
 		getServiceTagResource(images);
 		
-		//get service port resource.
+		//get service port.
 		getServicePortResource(not_occupied_ports);
 		
-		//save service resource.
+		//save service.
 		saveServiceResource();
 		
 		
@@ -69,7 +71,6 @@ public class CreateDabCompose {
 	 * @param docker_componse_template_yaml
 	 */
 	private void getServicePortResource(List<Long> not_occupied_ports) {
-		
 		//create service port map.
 		Map<String,String> service_port_map = new HashMap<String,String>();
 		
@@ -84,7 +85,7 @@ public class CreateDabCompose {
 			if(template_ports!=null) {
 				for(String template_port: template_ports) {
 					String template_port_tag = template_port.split(":")[0];
-					ports.add("\\\""+Long.toString(not_occupy_port)+":"+template_port.split(":")[1]+"\\\"");
+					ports.add(Long.toString(not_occupy_port));
 					service_port_map.put(template_port_tag, Long.toString(not_occupy_port));
 					i++;
 				}
@@ -118,15 +119,7 @@ public class CreateDabCompose {
 			}	
 			service_config.setEnv(envs);
 		}
-	}
-	
-	/**
-	 * print service resource
-	 */
-	private void printServiceResource() {
-		YamlFileParser yamlFileParser = new YamlFileParser();
-		yamlFileParser.printYamlMap(services);
-		
+
 	}
 	
 	/**
@@ -135,8 +128,67 @@ public class CreateDabCompose {
 	 */
 	private void saveServiceResource() {
 		
+		dab = "";
+	
+		ServiceCompose serviceCompose = null;
+		for(String service_name: services.keySet()) {
+			serviceCompose = (ServiceCompose)services.get(service_name);
+			
+			String envIndab = "";
+			for(String env:serviceCompose.getEnv()){
+				envIndab += 
+						env.replaceAll("^\\s+|\\s+$", "")+",";
+			}
 		
-		
+//		dab example for service....	      
+//			"sampleconfig": {
+//	      "Name": "sampleconfig",
+//	      "TaskTemplate": {
+//	        "ContainerSpec": {
+//	          "Image": "index.shurenyun.com/library/sample-hystrix-config:1.0.1-SNAPSHOT",
+//	          "Env": [
+//	            "EUREKA_HOST=sampleeureka",
+//	            "EUREKA_PORT=$EUREKA_PORT$",
+//	            "SERVER_PORT=$SERVER_PORT$"
+//	          ]
+//	        }
+//	      },
+//	      "Networks": [
+//	        "ingress"
+//	      ],
+//	      "EndpointSpec": {
+//	        "Mode": "vip",
+//	        "Ports": [
+//	          {
+//	            "Name": "pbport",
+//	            "Protocol": "tcp",
+//	            "TargetPort": $CONFIG_PORT$,
+//	            "PublishedPort": 8888
+//	          }
+//	        ]
+//	      }
+//	    },
+			
+			dab += 
+				 "\""+service_name+"\": { "+
+				 "\"Name\": \""+service_name+"\","+
+				 "\"TaskTemplate\": {"+
+				 "\"ContainerSpec\": {"+
+				 "\"Image\": \""+serviceCompose.getImage()+"\","+
+				 "\"Env\": ["+
+				 envIndab+
+				 "]}},"+
+				 "\"Networks\": [\"ingress\"],"+
+				 "\"EndpointSpec\": {"+
+				 "\"Mode\": \"vip\","+
+				 "\"Ports\": [{"+
+				 "\"Name\": \"pbport\","+
+		         "\"Protocol\": \"tcp\","+
+		         "\"TargetPort\": \""+serviceCompose.getPorts()+"\","+
+		         "\"PublishedPort\": 8888"+
+		         "}]}},";
+
+		}
 	}
 	
 

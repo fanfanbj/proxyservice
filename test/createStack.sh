@@ -7,7 +7,6 @@ curl "http://localhost:8090/stack" \
 {
   "svn_url": "http://svn-server/app1/",
   "stack_name":"stack_test_001",
-  "cluster_id":"2453",
   "images": [
     {
       "name":"sampleeureka",

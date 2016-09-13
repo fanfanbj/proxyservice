@@ -55,8 +55,8 @@ public class StackController {
 		method = RequestMethod.POST,
 		value = "/stack",
 		consumes = MediaType.APPLICATION_JSON_VALUE,
-		produces = MediaType.APPLICATION_JSON_VALUE)
-	public AddStackResponse create(@Valid @RequestBody AddStackRequest addStackRequest) {
+		produces = MediaType.TEXT_PLAIN_VALUE)
+	public String create(@Valid @RequestBody AddStackRequest addStackRequest) {
 		String svn_url = addStackRequest.getSvn_url();
 		String stack_name = addStackRequest.getStack_name();
 		List<EQImage> images = addStackRequest.getImages();
@@ -72,61 +72,57 @@ public class StackController {
 		Lock lock = new ReentrantLock();
 		lock.lock();
 		
-		// TODO BEGIN.
-		//get resource port. 
+		//get port. 
 		List<Long> not_occupied_ports = retrieveNotOccupiedPort.getPorts(); 
 		
 		//create dab compose.
 		createDabCompose.doCreate(docker_compose_template_yaml,images, not_occupied_ports);
 		String dab = createDabCompose.getDab();
-		
+			
 		//create stack.
-		SryCreateStackResponse sryCreateStackResponse = shurenyunApiRequestForward2.createStack(stack_name,dab);
-		
-		//create AddStackResponse.
-		AddStackResponse addStackResponse = new AddStackResponse();
-		addStackResponse.setStatus(Integer.toString(sryCreateStackResponse.getCode()));
-		addStackResponse.setError_message(sryCreateStackResponse.getData().getMessage());
-		//TODO END.
+		String result = "";
+		try{
+			result = shurenyunApiRequestForward2.createStack(stack_name,dab);
+		}catch(Exception e) {
+			result = e.getMessage();
+		}
 		lock.unlock();
-		return addStackResponse;
+		return result;
 		
 	}
 	
 	@RequestMapping(
 			method = RequestMethod.GET,
 			value = "/stack/{stack_name}",
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public GetStackResponse get(@PathVariable("stack_name") String stack_name ) {
+			produces = MediaType.TEXT_PLAIN_VALUE)
+	public String get(@PathVariable("stack_name") String stack_name ) {
 		
 		log.debug("GET /stack/"+stack_name);
-	
-		SrySearchStackResponse srySearchStackResponse = shurenyunApiRequestForward2.searchStack(stack_name);
 		
-		//create GetStackResponse.	
-		GetStackResponse getStackResponse = new GetStackResponse();
-		getStackResponse.setStatus(Integer.toString(srySearchStackResponse.getCode()));
-		getStackResponse.setError_message(srySearchStackResponse.getData().getMessage());
-	
-		return getStackResponse;
+		String result = "";
+		try{
+			//search stack
+			shurenyunApiRequestForward2.searchStack(stack_name);
+		}catch(Exception e){
+			result = e.getMessage();
+		}
+		return result; 
 	}
 	
 	@RequestMapping(
 			method = RequestMethod.DELETE,
 			value = "/stack/{stack_name}",
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public DelStackResponse delete(@PathVariable("stack_name") String stack_name ) {
+			produces = MediaType.TEXT_PLAIN_VALUE)
+	public String delete(@PathVariable("stack_name") String stack_name ) {
 			log.debug("DELETE /stack/"+stack_name);
-			
-			//invoke shurenyun get stack API.
-			SryDelStackResponse sryDelStackResponse = shurenyunApiRequestForward2.delStack(stack_name);
-			
-			//create DelStackResponse.
-			DelStackResponse delStackResponse = new DelStackResponse();
-			delStackResponse.setStatus(Integer.toString(sryDelStackResponse.getCode()));
-			delStackResponse.setError_message(sryDelStackResponse.getData().getMessage());
-		
-			return delStackResponse;
+			String result = "";
+			try{
+				//delete stack
+				result = shurenyunApiRequestForward2.delStack(stack_name);
+			}catch(Exception e){
+				result = e.getMessage();
+			}
+			return result;
 	}
 
 }

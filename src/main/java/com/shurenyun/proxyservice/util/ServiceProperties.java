@@ -9,6 +9,7 @@ public class ServiceProperties {
 	private String name;
 	private String password;
 	private String api;
+	private String swarmmgt;
 	
 	public String getName() {
 		return name;
@@ -28,6 +29,13 @@ public class ServiceProperties {
 	public void setApi(String api) {
 		this.api = api;
 	}
+	public String getSwarmmgt() {
+		return swarmmgt;
+	}
+	public void setSwarmmgt(String swarmmgt) {
+		this.swarmmgt = swarmmgt;
+	}
+	
 	
 	
 }

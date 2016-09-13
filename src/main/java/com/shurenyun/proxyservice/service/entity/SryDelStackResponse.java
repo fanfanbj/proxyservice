@@ -6,7 +6,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class SryDelStackResponse{
 	
 	int code;
-	SryDelStackData data;
+	String data;
+	String message;
+	String source;
 	
 	public int getCode() {
 		return code;
@@ -14,13 +16,25 @@ public class SryDelStackResponse{
 	public void setCode(int code) {
 		this.code = code;
 	}
-	public SryDelStackData getData() {
+	public String getData() {
 		return data;
 	}
-	public void setData(SryDelStackData data) {
+	public void setData(String data) {
 		this.data = data;
+	}
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	public String getSource() {
+		return source;
+	}
+	public void setSource(String source) {
+		this.source = source;
 	}
 	
 	
-
+	
 }
