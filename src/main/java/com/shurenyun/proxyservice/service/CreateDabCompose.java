@@ -156,19 +156,32 @@ public class CreateDabCompose {
 		for(String service_name: services.keySet()) {
 			serviceCompose = (ServiceCompose)services.get(service_name);
 			
+			//Env in dab.
 			String envIndab = "";
 			int i = 0;
 			for(String env:serviceCompose.getEnv()){
+				if(i==0) {
+					envIndab += "\"Env\": [";
+				}		 
 				envIndab += env.replaceAll("^\\s+|\\s+$", "");
 				if(i<serviceCompose.getEnv().size()-1) {
 					envIndab += ",";
 				}	
+				if(i==serviceCompose.getEnv().size()-1) {
+					envIndab += "]";
+				}
 				i++;
+				
 			}
-		
+			
+			//Ports in dab.
 			String portsIndab = "";
 			i =0;
 			for(String port:serviceCompose.getPorts()) {
+				if(i==0) {
+					portsIndab += "\"Ports\": [";
+					
+				}
 				
 				portsIndab += "{"+
 				 "\"Name\": \"pbport\","+
@@ -180,7 +193,11 @@ public class CreateDabCompose {
 				if(i<serviceCompose.getPorts().size()-1) {
 					portsIndab += ",";
 				}
+				if(i==serviceCompose.getPorts().size()-1) {
+					portsIndab += "]";
+				}
 				i++;
+				
 			}
 
 			dab += 
@@ -188,14 +205,12 @@ public class CreateDabCompose {
 				 "\"Name\": \""+service_name+"\","+
 				 "\"TaskTemplate\": {"+
 				 "\"ContainerSpec\": {"+
-				 "\"Image\": \""+serviceCompose.getImage()+"\","+
-				 "\"Env\": ["+
-				 envIndab+
-				 "]}},"+
+				 "\"Image\": \""+serviceCompose.getImage()+"\""+(envIndab.equals("")?"":",")+
+				 envIndab+"}},"+
 				 "\"Networks\": [\"ingress\"],"+
 				 "\"EndpointSpec\": {"+
-				 "\"Mode\": \"vip\","+
-				 "\"Ports\": ["+portsIndab+"]}}";
+				 "\"Mode\": \"vip\""+(portsIndab.equals("")?"":",")+
+				 portsIndab+"}}";
 			if(j<services.size()-1) {
 				dab += ",";
 			}

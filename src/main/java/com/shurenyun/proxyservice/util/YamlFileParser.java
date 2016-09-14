@@ -119,6 +119,8 @@ public class YamlFileParser {
 				}
 				services.put(service_name, servicecompose);
 			}
+			printYamlMap(services);
+			
 			return services;
 	}
 	
