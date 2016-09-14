@@ -100,20 +100,14 @@ public class CreateDabCompose {
 				for(String template_env: template_envs) {
 					String[] template_env_array = template_env.split("=");
 					//print service_port_map.
-					boolean replace_flag = false;
 					for(String service_port: service_port_map.keySet()) {
 						//replace template port.
 						if(template_env_array != null && template_env_array.length==2){
 							if(template_env_array[1].trim().equals(service_port)) {
-								envs.add(template_env_array[0]+": "+service_port.replace(template_env_array[1].trim(), service_port_map.get(service_port)));
-								replace_flag = true;
+								envs.add("\""+template_env_array[0]+"="+service_port.replace(template_env_array[1].trim(), service_port_map.get(service_port))+"\"");
 							}
 						}	
 					}
-					
-					if (!replace_flag)
-							envs.add(template_env.replace("=", ": "));
-					
 				}
 			}	
 			service_config.setEnv(envs);
@@ -158,15 +152,36 @@ public class CreateDabCompose {
 		dab = "";
 	
 		ServiceCompose serviceCompose = null;
+		int j=0;
 		for(String service_name: services.keySet()) {
 			serviceCompose = (ServiceCompose)services.get(service_name);
 			
 			String envIndab = "";
+			int i = 0;
 			for(String env:serviceCompose.getEnv()){
-				envIndab += 
-						env.replaceAll("^\\s+|\\s+$", "")+",";
+				envIndab += env.replaceAll("^\\s+|\\s+$", "");
+				if(i<serviceCompose.getEnv().size()-1) {
+					envIndab += ",";
+				}	
+				i++;
 			}
 		
+			String portsIndab = "";
+			i =0;
+			for(String port:serviceCompose.getPorts()) {
+				
+				portsIndab += "{"+
+				 "\"Name\": \"pbport\","+
+		         "\"Protocol\": \"tcp\","+
+		         "\"TargetPort\": \""+port+"\","+
+		         "\"PublishedPort\": 8888"+
+		         "}";
+				
+				if(i<serviceCompose.getPorts().size()-1) {
+					portsIndab += ",";
+				}
+				i++;
+			}
 
 			dab += 
 				 "\""+service_name+"\": { "+
@@ -180,12 +195,11 @@ public class CreateDabCompose {
 				 "\"Networks\": [\"ingress\"],"+
 				 "\"EndpointSpec\": {"+
 				 "\"Mode\": \"vip\","+
-				 "\"Ports\": [{"+
-				 "\"Name\": \"pbport\","+
-		         "\"Protocol\": \"tcp\","+
-		         "\"TargetPort\": \""+serviceCompose.getPorts()+"\","+
-		         "\"PublishedPort\": 8888"+
-		         "}]}},";
+				 "\"Ports\": ["+portsIndab+"]}}";
+			if(j<services.size()-1) {
+				dab += ",";
+			}
+			j++;
 
 		}
 	}

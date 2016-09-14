@@ -1,7 +1,6 @@
 #!/bin/bash
 
 curl "http://localhost:8090/stack" \
--H "Accept:application/json" \
 -H "Content-Type:application/json" \
 --data @<(cat <<EOF
 {

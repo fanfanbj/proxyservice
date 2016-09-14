@@ -54,7 +54,7 @@ public class ShurenyunApiRequestForward2 {
 //		request example...	
 //		 {
 //		     "Namespace":"test-2",
-//		     "Stack"{
+//		     "Stack": {
 //		        "Services": {
 //		          "redis": {
 //		            "Image": "redis"
@@ -66,7 +66,7 @@ public class ShurenyunApiRequestForward2 {
 
 		String jsonrequest = "{"+
 				     "\"Namespace\":\""+stack_name+"\","+
-				     "\"Stack\"{"+
+				     "\"Stack\":{"+
 				     "\"Services\": {"+
 				     dab+
 				     "},"+
@@ -140,20 +140,19 @@ public class ShurenyunApiRequestForward2 {
 		sryOccupiedPortRestTemplate.getMessageConverters().add(new StringHttpMessageConverter());
         
 		String uri = new String(this.configuration.getSwarmmgt()+"/services");
-		log.debug(uri);
 		
 		HttpEntity<String> request = new HttpEntity<String>("");
-		
-		ResponseEntity<JSONArray> responseEntity = sryOccupiedPortRestTemplate.exchange(uri, HttpMethod.GET, request, JSONArray.class);
-		JSONArray services = responseEntity.getBody();
+		ResponseEntity<String> responseEntity = sryOccupiedPortRestTemplate.exchange(uri, HttpMethod.GET, request, String.class);
+		log.debug(responseEntity.getBody().toString());
 		List<Long> list = new ArrayList<Long>();
-		for(int i=0;i< services.size();i++) {
-			JSONObject innerObj = (JSONObject) services.get(i); 
-			JSONObject endpoint = (JSONObject)innerObj.get("Endpoint");
-			JSONObject ports = (JSONObject)endpoint.get("Ports");
-			String publishedPort = (String)ports.get("PublishedPort");
-			list.add(Long.parseLong(publishedPort));
-		}
+//		JSONArray services = responseEntity.getBody();
+//		for(int i=0;i< services.size();i++) {
+//			JSONObject innerObj = (JSONObject) services.get(i); 
+//			JSONObject endpoint = (JSONObject)innerObj.get("Endpoint");
+//			JSONObject ports = (JSONObject)endpoint.get("Ports");
+//			String publishedPort = (String)ports.get("PublishedPort");
+//			list.add(Long.parseLong(publishedPort));
+//		}
 		return list;
 	} 
 }
